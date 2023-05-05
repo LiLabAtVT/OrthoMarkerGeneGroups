@@ -117,13 +117,8 @@ FeaturePlot(Oryza_seurat, features = "Os11g0115100")
 
 ```{r}
 ## Find new marker genes for clusters annotation
-#Rice_marker <- FindAllMarkers(Oryza_rename_clusters, only.pos = TRUE, min.pct = 0.3, logfc.threshold = 0.5) %>% group_by(cluster) %>% arrange(cluster, desc(avg_log2FC))
-#saveRDS(Maize_marker, file = "MG_092522_Maize_05.RData") 
-
-
-##Summarize the number of Marker genes in each cluster
-#table(Rice_marker$cluster)
-#Rice_marker
+Rice_marker <- FindAllMarkers(Oryza_rename_clusters, only.pos = TRUE, min.pct = 0.3, logfc.threshold = 0.5) %>% group_by(cluster) %>% arrange(cluster, desc(avg_log2FC))
+saveRDS(Maize_marker, file = "MG_092522_Maize_05.RData") 
 ```
 
 
