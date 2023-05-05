@@ -1,0 +1,99 @@
+---
+title: "Arabidopsis UMAP"
+output: html_document
+date: '2022-08-03'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+
+# Load all libraries #-----#-----#-----#
+library(Seurat); library(Matrix); library(tidyverse)
+
+#***************************************#
+#
+# Combine 3 non-mutant samples together.
+fileNames = c( "Sample_WT-WERGFP", "Sample_WT-WERGFP_2", "Sample_WT-WERGFP_3")
+data_sample = c()
+for(i in fileNames){
+  matrix = readMM(file = paste0("/Users/tranchau/Documents/SC_crossSpecies/GSE123013_RAW_matrices/", i, "/filtered_gene_bc_matrices/TAIR10/matrix.mtx"))
+  rownames(matrix) = read.delim(file = paste0("/Users/tranchau/Documents/SC_crossSpecies/GSE123013_RAW_matrices/", i, "/filtered_gene_bc_matrices/TAIR10/genes.tsv"), header = FALSE, stringsAsFactors = FALSE)$V1
+  colnames(matrix) = read.delim(file = paste0("/Users/tranchau/Documents/SC_crossSpecies/GSE123013_RAW_matrices/", i, "/filtered_gene_bc_matrices/TAIR10/barcodes.tsv"), header = FALSE, stringsAsFactors = FALSE)$V1
+  data_sample <- c(data_sample, matrix)
+}
+ATH_data = cbind(data_sample[[1]], data_sample[[2]], data_sample[[3]]) # Same rownames, different columns,
+
+
+# Create a seurat object
+Arabidopsis_seurat <- CreateSeuratObject(ATH_data, project = "ARABIDOPSIS")
+
+# Normal and scale the data
+Arabidopsis_seurat <- NormalizeData(object = Arabidopsis_seurat, verbose = FALSE)
+Arabidopsis_seurat <- FindVariableFeatures(object = Arabidopsis_seurat, selection.method = "vst", verbose = FALSE)
+Arabidopsis_seurat <- ScaleData(Arabidopsis_seurat,  features = rownames(Arabidopsis_seurat))
+
+# Reduce the dimention of the data
+Arabidopsis_seurat <- RunPCA(Arabidopsis_seurat, features = VariableFeatures(object = Arabidopsis_seurat) ,verbose = FALSE)
+Arabidopsis_seurat <- FindNeighbors(Arabidopsis_seurat, reduction = "pca", dims = 1:30) 
+Arabidopsis_seurat <- FindClusters(Arabidopsis_seurat, resolution = 0.5) 
+
+# Plot UMAP
+Arabidopsis_seurat <- RunUMAP(Arabidopsis_seurat, reduction = "pca", dims = 1:30) 
+DimPlot(Arabidopsis_seurat, reduction = "umap", label = TRUE)
+
+
+# Rename cell type clusters
+Arabidopsis_seurat_rename <- RenameIdents(object = Arabidopsis_seurat, '0' = "Stele1", '1' = "Meristem_Endocortex", '2' = "Root_cap", '3'= "Atrichoblast1", '4'= "Trichoblast2", '5' = "Cortex", '6' = "Stele2", '7'= "Atrichoblast2", '8' = "Endodermis", '9' = "Trichoblast1", '10'= "Xylem", '11' = "Unknown", '12' = "Phloem")
+
+# Plot the UMAP with cell type annotation
+DimPlot(Arabidopsis_seurat_rename, reduction = "umap", label = TRUE) + NoLegend() + NoAxes()
+
+```
+
+```{r}
+# SPMarker processing
+# SPMarker (optional)
+Arabidopsis_seurat_rename@meta.data$cellType = Idents(Arabidopsis_seurat_rename)
+Arabidopsis_seurat_rename@meta.data$prob = 1
+Ath_cell = Arabidopsis_seurat_rename@meta.data %>% select(cellType, prob)
+```
+
+```{r}
+# Sort the dotplot cell type cluster
+Idents(Arabidopsis_seurat_rename) <- factor(Idents(Arabidopsis_seurat_rename), levels= c("Xylem", "Stele1", "Stele2", "Phloem", "Cortex","Unknown",  "Trichoblast1", "Trichoblast2", "Atrichoblast1", "Atrichoblast2", "Endodermis", "Root_cap", "Meristem_Endocortex"))
+
+
+DotPlot(object = Arabidopsis_seurat_rename, features = c("AT1G68810", "AT4G35350", "AT1G71930", "AT4G14010", "AT1G44800", "AT1G64660", "AT2G46890", "AT1G79430", "AT5G50720", "AT1G62510", "AT5G53370",  "AT1G27740", "AT4G34580",  "AT1G62980", "AT2G37260", "AT5G40330", "AT1G65310", "AT3G11550", "AT2G36100", "AT5G17520", "AT3G52180", "AT2G14900", "AT5G45210"), cols = "RdYlBu",  col.min= -2, col.max = 2, dot.scale = 4) + 
+  theme(axis.text.x = element_text(size=8, angle = 90, hjust=1), 
+        axis.text.y = element_text(size=10, angle = 0, hjust=1), 
+        axis.title.y  = element_text(size=15, angle = 90, vjust=-7),
+        legend.title = element_text(size=10),
+        legend.text = element_text(size=8)) + 
+  xlab('Gene') +  
+  ylab('Cell type')
+
+```
+
+```{r}
+# Make the plot to show the expression of a certian gene
+FeaturePlot(Arabidopsis_seurat, features = "AT5G67400", cols = c("gray", "green", "darkgreen"))
+```
+
+
+
+
+```{r}
+## Find cell type marker gene
+#Ara_marker <- FindAllMarkers(Arabidopsis_seurat_rename, only.pos = TRUE, min.pct = 0.5, logfc.threshold = 0.5) %>% group_by(cluster) %>% arrange(cluster, desc(avg_log2FC))
+#saveRDS(Ara_marker, file = "MG_092522_Ath_05.RData")
+
+```
+
+
+
+
+

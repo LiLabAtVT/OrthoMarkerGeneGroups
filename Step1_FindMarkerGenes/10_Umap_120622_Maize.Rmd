@@ -1,0 +1,96 @@
+---
+title: "Maize UMAP"
+output: html_document
+date: '2022-08-04'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# Load all libraries #-----#-----#-----#
+library(Seurat); library(Matrix); library(tidyverse); library(readr)
+
+# Load the data
+GSE173087_Maize <- read.csv("/Users/tranchau/Documents/SC_crossSpecies/GSE173087_Maize_cells_expression_matrix.csv", row.names = 1, header= TRUE)
+
+# Convert into dgCMatrix
+GSE173087_Maize_dgCmatrix <- as(as.matrix(GSE173087_Maize), "dgCMatrix")
+
+# Create Seurat object
+Maize_seurat <- CreateSeuratObject(GSE173087_Maize_dgCmatrix, project = "Maize")
+
+# Normal and scale the data
+Maize_seurat <- NormalizeData(object = Maize_seurat, verbose = FALSE)
+Maize_seurat <- FindVariableFeatures(object = Maize_seurat, selection.method = "vst")
+Maize_seurat <- ScaleData(Maize_seurat, features = rownames(Maize_seurat))
+
+# Dimensional reduction
+maize <- RunPCA(Maize_seurat, npcs =15, verbose = FALSE)
+maize <- FindNeighbors(maize, dims = 1:15)
+maize <- FindClusters(maize, resolution = 0.55)
+
+# UMAP plot
+maize <- RunUMAP(maize, reduction = "pca", dims = 1:15)
+DimPlot(maize, reduction = "umap", label = TRUE)
+
+# Rename all clusters
+Maize_rename_clusters <- RenameIdents(object = maize, '0' = "Cortex", '1' = "Stele1", '2' = "Cortex",
+                             '3'= "Stele/Pith", '4'= "Phloem", '5' = "Stele2",
+                             '6' = "Endodermal_Initials", '7'= "Cortex_like", '8' = "Stele/Pith",
+                             '9' = "Endodermis1", '10' = "Endodermal_Initials", '11' = "Epidermis",
+                             '12' = "Cortex_like" , '13' = "Xylem" , '14' = "Endodermis2",
+                             '15' = "Endodermal_Initials", '16' = "Cortex_Initials", '17' = "QC" ,
+                             '18' = "Initials", '19' = "Stele3")
+# Plot the UMAP with cell types annotation
+DimPlot(Maize_rename_clusters, reduction = "umap", label = TRUE) + NoLegend() + NoAxes()
+#saveRDS(Maize_rename_clusters, "/Users/tranchau/Library/CloudStorage/OneDrive-VirginiaTech/A_NinaProjects_2022/SingleCellCrossSpecies_2022/SeuratObj_021323/Maize_wLabel.rds")
+```
+
+```{r}
+
+#####################
+# SPMarker (Optional)
+Maize_rename_clusters@meta.data$cellType = Idents(Maize_rename_clusters)
+Maize_rename_clusters@meta.data$prob = 1
+Maize_cell = Maize_rename_clusters@meta.data %>% select(cellType, prob)
+#write.csv(Maize_cell, "/Users/tranchau/Documents/SC_crossSpecies/092522_allSteps/Data/111822_Zeamays_cellType.csv", quote = FALSE)
+#####################
+
+Maize_rename_clusters@meta.data$cell_type = Maize_rename_clusters@active.ident
+Maize_rename_clusters@meta.data$prob = 1
+Maize_celltype_SPMarker = Maize_rename_clusters@meta.data[,c("cell_type", "prob")]
+#write.csv(Maize_celltype_SPMarker, "Maize_celltype_SPMarker.csv", quote = FALSE)
+```
+
+```{r}
+# Sort clusters in Dotplot
+Idents(Maize_rename_clusters) <- factor(Idents(Maize_rename_clusters), levels= c("QC", "Initials", "Cortex_Initials", "Cortex", "Cortex_like","Xylem", "Phloem", "Stele1", "Stele2", "Stele3", "Stele/Pith",  "Epidermis","Endodermis1", "Endodermis2", "Endodermal_Initials"))
+
+# Make the dotplot
+DotPlot(object = Maize_rename_clusters, features = c("Zm00001d012714", "Zm00001d052952", "Zm00001d015347", "Zm00001d002191", "Zm00001d046186",  "Zm00001d017508", "Zm00001d035689", "Zm00001d032972", "Zm00001d043276", "Zm00001d043610", "Zm00001d048131",  "Zm00001d000017", "Zm00001d011156","Zm00001d048520", "Zm00001d025402", "Zm00001d003707","Zm00001d032822", "Zm00001d041611", "Zm00001d020794","Zm00001d049606" , "Zm00001d046778","Zm00001d043523"), cols = "RdYlBu",  col.min= -2, col.max = 2, dot.scale = 4) + 
+  theme(axis.text.x = element_text(size=10, angle = 90, hjust=1), 
+        axis.text.y = element_text(size=10, angle = 0, hjust=1), 
+        axis.title.y  = element_text(size=15, angle = 90, vjust=-6),
+        legend.title = element_text(size=10),
+        legend.text = element_text(size=8)) + 
+  xlab('Gene') +  
+  ylab('Cell type')
+
+# Show the gene expression per plot
+FeaturePlot(maize, features = "Zm00001d048131", cols = c("gray", "green", "darkgreen"))
+```
+
+
+
+```{r}
+## Find new marker genes for every cell type clusters
+#Maize_marker <- FindAllMarkers(Maize_rename_clusters, only.pos = TRUE, min.pct = 0.3, logfc.threshold = 0.45) %>% group_by(cluster) %>% arrange(cluster, desc(avg_log2FC))
+#saveRDS(Maize_marker, file = "MG_092522_Maize_05.RData")
+```
+
+
+
+
+
