@@ -86,8 +86,8 @@ FeaturePlot(maize, features = "Zm00001d048131", cols = c("gray", "green", "darkg
 
 ```{r}
 ## Find new marker genes for every cell type clusters
-#Maize_marker <- FindAllMarkers(Maize_rename_clusters, only.pos = TRUE, min.pct = 0.3, logfc.threshold = 0.45) %>% group_by(cluster) %>% arrange(cluster, desc(avg_log2FC))
-#saveRDS(Maize_marker, file = "MG_092522_Maize_05.RData")
+Maize_marker <- FindAllMarkers(Maize_rename_clusters, only.pos = TRUE, min.pct = 0.3, logfc.threshold = 0.45) %>% group_by(cluster) %>% arrange(cluster, desc(avg_log2FC))
+saveRDS(Maize_marker, file = "MG_092522_Maize_05.RData")
 ```
 
 
