@@ -1,0 +1,129 @@
+---
+title: "UMAP of Rice (Rice cell type atlas)"
+geometry: margin=.5in
+output: 
+  html_document:
+    number_sections: yes
+    theme: journal
+    toc: yes
+    toc_depth: '3'
+  pdf_document:
+    keep_tex: yes
+    number_sections: no
+    toc: yes
+    toc_depth: 2
+  word_document:
+    reference_docx: rmdWordRefStyleNumb.docx
+    toc: yes
+    toc_depth: '1'
+fontsize: 11pt
+subparagraph: yes
+header-includes: |
+  \usepackage{graphicx, enumitem,lipsum, amsmath,amssymb,array,setspace,fullpage, comment, float, multicol,rotating, pdfpages, titlesec}
+  \titlespacing{\section}{0pt}{8pt plus 2pt minus 1pt}{0pt plus 1pt minus 1pt}
+  \titlespacing{\subsection}{0pt}{8pt plus 2pt minus 1pt}{0pt plus 1pt minus 1pt}
+  \titlespacing{\subsubsection}{0pt}{8pt plus 2pt minus 1pt}{0pt plus 1pt minus 1pt}
+---
+
+<!-- infor on spacing -->
+<!--https://tex.stackexchange.com/questions/53338/reducing-spacing-after-headings -->
+
+<!-- Code so that output is wrapped, not so the code is also wrapped -->
+<!-- Added: tidy=TRUE and tidy.opts to options to wrap code -->
+
+```{r}
+# Loading all packages
+library(Seurat); library(Matrix); library(tidyverse)
+
+#***************************************#
+# Load dataset: matrix, gene ID for rowname of matrix, barcode for colname of matrix
+matrix = readMM(file = "/Users/tranchau/Documents/SC_crossSpecies/E-ENAD-52-quantification-raw-files/E-ENAD-52.aggregated_filtered_counts.mtx")
+rownames(matrix) = read.delim(file = "/Users/tranchau/Documents/SC_crossSpecies/E-ENAD-52-quantification-raw-files/E-ENAD-52.aggregated_filtered_counts.mtx_rows", header = FALSE)$V1
+colnames(matrix) = read.delim(file = "/Users/tranchau/Documents/SC_crossSpecies/E-ENAD-52-quantification-raw-files/E-ENAD-52.aggregated_filtered_counts.mtx_cols", header = FALSE)$V1
+
+
+# Create Seurat object
+Oryza_seurat <- CreateSeuratObject(matrix, project = "Oryza")
+VlnPlot(Oryza_seurat, features = c("nFeature_RNA", "nCount_RNA"), ncol = 2)
+
+# Quality control
+Oryza_seurat <- subset(Oryza_seurat, subset = nFeature_RNA > 500 & nFeature_RNA < 6000 & nCount_RNA > 500 & nCount_RNA < 40000 )
+VlnPlot(Oryza_seurat, features = c("nFeature_RNA", "nCount_RNA"), ncol = 2)
+
+# Normal and scale the data
+Oryza_seurat <- NormalizeData(object = Oryza_seurat, normalization.method = "LogNormalize")
+Oryza_seurat <- FindVariableFeatures(object = Oryza_seurat, selection.method = "vst")
+VariableFeaturePlot(Oryza_seurat)
+Oryza_seurat <- ScaleData(Oryza_seurat,  features = rownames(Oryza_seurat))
+
+# Dimension reduction
+Oryza_seurat <- RunPCA(Oryza_seurat, features = VariableFeatures(object = Oryza_seurat) ,verbose = FALSE)
+Oryza_seurat <- FindNeighbors(Oryza_seurat, reduction = "pca", dims = 1:32) 
+Oryza_seurat <- FindClusters(Oryza_seurat, resolution = 0.4) 
+Oryza_seurat <- RunUMAP(Oryza_seurat, reduction = "pca", dims = 1:32) 
+
+
+# Plot UMAP
+DimPlot(Oryza_seurat, reduction = "umap", label = TRUE)
+```
+
+```{r}
+# Rename clusters
+Oryza_rename_clusters <- RenameIdents(object = Oryza_seurat, '0' = "EMC", '1' = "Meristem", '2' = "Trichoblast1",
+                             '3'= "Cortex", '4'= "Endodermis_like", '5' = "UnknownA",
+                             '6' = "Exodermis", '7'= "Stele", '8' = "UnknownB",
+                             '9' = "UnknownC", '10' = "Exodermis", '11' = "Atrichoblast",
+                             '12' = "Meristem" , '13' = "Endodermis" , '14' = "Cortex_like",
+                             '15' = "UnknownD", '16' = "PutativeRootcap", '17' = "Trichoblast2" ,
+                             '18' = "Pericycle", '19' = "Phloem", '20' = "Xylem", '21' = "Xylem_like")
+
+# UMAP plot with cell types annotation
+rice_a_plot = DimPlot(Oryza_rename_clusters, reduction = "umap", label = TRUE) + NoLegend() + NoAxes()
+rice_a_plot
+
+#saveRDS(Oryza_rename_clusters, "/Users/tranchau/Library/CloudStorage/OneDrive-VirginiaTech/A_NinaProjects_2022/SingleCellCrossSpecies_2022/SeuratObj_021323/Rice_wLabel.rds")
+```
+
+```{r}
+# Data processing for SPMarker package (optional step)
+Oryza_rename_clusters@meta.data$cellType = Idents(Oryza_rename_clusters)
+Oryza_rename_clusters@meta.data$prob = 1
+rice_cell = Oryza_rename_clusters@meta.data %>% select(cellType, prob)
+####################################################################################
+```
+
+```{r}
+# Sort the clusters in the Dotplot
+Idents(Oryza_rename_clusters) <- factor(Idents(Oryza_rename_clusters), levels= c("EMC", "Trichoblast1", "Trichoblast2", "Atrichoblast", "Endodermis", "Endodermis_like", "Cortex", "Cortex_like", "UnknownA","Xylem", "Xylem_like", "Stele", "Phloem", "Pericycle",  "Meristem", "Exodermis", "UnknownB", "UnknownC", "UnknownD", "PutativeRootcap"))
+
+
+# Create the dotplot with marker genes from publication
+DotPlot(object = Oryza_rename_clusters, features = c("Os02g0112600","Os02g0595900", "Os02g0663800", "Os03g0831400", "Os01g0248900", "Os03g0428700","Os04g0423800", "Os10g0155100","Os03g0103100",  "Os03g0103200","Os04g0554500", "Os01g0914300",  "Os11g0115100",  "Os07g0638500", "Os05g0108600", "Os09g0422500" , "Os02g0653000", "Os07g0531500", "Os12g0160100", "Os05g0550300", "Os05g0160300",  "Os03g0279200", "Os06g0681600", "Os06g0513862", "Os04g0615200",  "Os10g0191300", "Os06g0561000", "Os03g0247200"), cols = "RdYlBu",  col.min= -2, col.max = 2, dot.scale = 4) + 
+  theme(axis.text.x = element_text(size=9, angle = 90, hjust=1), 
+        axis.text.y = element_text(size=10, angle = 0, hjust=1), 
+        axis.title.y  = element_text(size=15, angle = 90, vjust=-4),
+        legend.title = element_text(size=10),
+        legend.text = element_text(size=8)) + 
+  xlab('Gene') +  
+  ylab('Cell type')
+
+```
+
+```{r}
+# Feature plot, show the expression of one gene per plot
+FeaturePlot(Oryza_seurat, features = "Os11g0115100")
+```
+
+
+```{r}
+## Find new marker genes for clusters annotation
+#Rice_marker <- FindAllMarkers(Oryza_rename_clusters, only.pos = TRUE, min.pct = 0.3, logfc.threshold = 0.5) %>% group_by(cluster) %>% arrange(cluster, desc(avg_log2FC))
+#saveRDS(Maize_marker, file = "MG_092522_Maize_05.RData") 
+
+
+##Summarize the number of Marker genes in each cluster
+#table(Rice_marker$cluster)
+#Rice_marker
+```
+
+
