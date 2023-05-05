@@ -88,8 +88,8 @@ FeaturePlot(Arabidopsis_seurat, features = "AT5G67400", cols = c("gray", "green"
 
 ```{r}
 ## Find cell type marker gene
-#Ara_marker <- FindAllMarkers(Arabidopsis_seurat_rename, only.pos = TRUE, min.pct = 0.5, logfc.threshold = 0.5) %>% group_by(cluster) %>% arrange(cluster, desc(avg_log2FC))
-#saveRDS(Ara_marker, file = "MG_092522_Ath_05.RData")
+Ara_marker <- FindAllMarkers(Arabidopsis_seurat_rename, only.pos = TRUE, min.pct = 0.5, logfc.threshold = 0.5) %>% group_by(cluster) %>% arrange(cluster, desc(avg_log2FC))
+saveRDS(Ara_marker, file = "MG_092522_Ath_05.RData")
 
 ```
 
