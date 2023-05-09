@@ -1,4 +1,4 @@
-# Convert species marker genes into orthologous marker genes by OrthoFinder
+# Convert species marker genes into OMGs by OrthoFinder
 
 ## Install
 conda install orthofinder
