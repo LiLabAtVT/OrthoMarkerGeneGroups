@@ -1,2 +1,4 @@
-Provide instructions for running OrthoFinder pipeline. 
-Provide example output file of OrthoFinder using four species.
+# Convert species marker genes into orthologous marker genes by OrthoFinder
+
+## Install
+conda install orthofinder
