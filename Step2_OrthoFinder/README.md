@@ -10,7 +10,7 @@ Run OrthoFinder on the input fasta files: <br>
 `OrthoFinder/orthofinder -f OrthoFinder/fasta`
 
 ### Result:
-The output data is the Orthogroups.tsv
+The output data is in the Orthogroups.tsv file.
 
 ### Reference:
 Emms, D. M., & Kelly, S. (2019). OrthoFinder: phylogenetic orthology inference for comparative genomics. Genome biology, 20, 1-14.
