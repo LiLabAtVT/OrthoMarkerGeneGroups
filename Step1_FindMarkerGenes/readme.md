@@ -2,7 +2,7 @@
 
 This repository contains scripts file for identifying marker genes in three plant species using three different methods: Seurat, SHAP+RF, and SVM.
 
-### Install: 
+### Requirements: 
 * R version 4.1.0 or higher </br>
 * Matrix package </br>    
 * Seurat package version 4.1.1 </br>
