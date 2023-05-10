@@ -8,6 +8,7 @@
 * Matrix package </br>    
 * Seurat package version 4.1.1 </br>
 * SPmarker package and its dependencies including Python, pandas, sklearn, shap, keras </br>
+* OrthoFinder software (v2.5.4) </br>
 ### Processing:
 #### Step 1, Find cell type marker genes:
 Identifying marker genes in three plant species using three different methods: 
