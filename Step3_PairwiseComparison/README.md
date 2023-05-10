@@ -3,7 +3,7 @@
 ### Introduction:
 These scripts present a comprehensive comparison of orthologous marker genes for cell type clusters across three plant species, with the aim of generating lists of conserved orthologous marker genes that could be used to identify cell types in other plant species.
 
-### Requirements:
+### Processing:
 * Use the output generated from step 1 and step 2 as input for this step. </br>
 * Select the top 200 marker genes identified in step 1:
 ```R
@@ -34,4 +34,37 @@ count_com_OG = function(Species1, Species2){
 }
 
 df = as.data.frame(count_com_OG(Species_1, Species_2))
+```
+
+* Perform the fisher exact test to evaluate the significance of the conserved marker gene list for each cell type cluster:
+```R
+df$cell_type = rownames(df) # Add column to make 2 variables when using melt function
+# Add a row that sums up the values in all other rows
+sumrow = df %>% select(-cell_type) %>% colSums() # sum all numeric row in the dataframe
+sum_h = c(sumrow, "sum_h") 
+df = rbind(df, sum_h) # After merging two data frames, datatype in dataframe will be changed into character
+library(hablar)
+df = df %>% retype() %>% as.data.frame(df) # This library and function retype will change the data into the correct type
+
+# Add a column to sum up all values in other columns
+df$sum_v = df %>% select(-cell_type) %>% rowSums() # sum all numeric columns in the dataframe
+rownames(df) <- df$cell_type  
+
+p_value_dataframe = df[1: (nrow(df) - 1), 1: (ncol(df) -2)]
+
+for (i in rownames(p_value_dataframe)){
+  for (j in colnames(p_value_dataframe)){
+    frame = df[c(i, "sum_h"), c(j, "sum_v")]
+    frame[2,2] = frame[2,2] - frame[1,2] - frame[2,1] + frame[1,1]
+    frame[1,2] = frame[1,2] - frame[1,1]
+    frame[2,1] = frame[2,1] - frame[1,1]
+    p_value_dataframe[i,j] = fisher.test(frame, alternative = "greater")$p.value
+  }
+}
+```
+
+* Apply FDR correction to the p-values to address the issue of multiple testing: 
+```R
+adjusted_pvalue_dataframe[] = p.adjust(unlist(p_value_dataframe), method = "BH")
+conclusionTable_0.01 = ifelse(adjusted_pvalue_dataframe < 0.01, "Reject", "Fail")
 ```
