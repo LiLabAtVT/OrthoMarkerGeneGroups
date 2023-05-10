@@ -18,7 +18,7 @@ Species_1 = merge(Marker_genes, Orthologous_group, by.x = "gene", by.y = "Specie
 # Function create table of common OG gene names between 2 species
 count_com_OG = function(Species1, Species2){
   clusters_S1 = unique(Species1$cluster); clusters_S2 = unique(Species2$cluster)
-  two_plants <- matrix(nrow=length(clusters_S1), ncol=length(clusters_S2))
+  two_plants = matrix(nrow=length(clusters_S1), ncol=length(clusters_S2))
   for(i in 1:length(clusters_S1)){
     for(j in 1:length(clusters_S2)){
       list_overlap = intersect(Species1[Species1$cluster == clusters_S1[i],]$Orthogroup,  
@@ -48,7 +48,7 @@ df = df %>% retype() %>% as.data.frame(df) # This library and function retype wi
 
 # Add a column to sum up all values in other columns
 df$sum_v = df %>% select(-cell_type) %>% rowSums() # sum all numeric columns in the dataframe
-rownames(df) <- df$cell_type  
+rownames(df) = df$cell_type  
 
 p_value_dataframe = df[1: (nrow(df) - 1), 1: (ncol(df) -2)]
 
