@@ -61,11 +61,11 @@ For detailed information, please refer to these scripts above:
 
 ### Find marker genes by SHAP+RF and SVM:
 Prepare a gene expression matrix file (.csv) and cell meta file (.csv) </br>
-`python SPmarker/SPmarker.py \ </br>
-            -d work_directory/ -o work_directory/ \  </br> 
-            -mtx gene_expression.csv \  </br>
-            -meta cellType.csv
- `
+`python SPmarker/SPmarker.py \ 
+            -d work_directory/ -o work_directory/ \  
+            -mtx gene_expression.csv \ 
+            -meta cellType.csv`
+
 ### Result:
 The collected output data is stored in the file named "112122_top200_Seurat_SHAP_SVM.xlsx".
 
