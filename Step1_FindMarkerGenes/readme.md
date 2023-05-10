@@ -63,9 +63,9 @@ For detailed information, please refer to these scripts above:
 Prepare a gene expression matrix file (.csv) and cell meta file (.csv) </br>
 ```
 python SPmarker/SPmarker.py \ 
-            -d work_directory/ -o work_directory/ \  
-            -mtx gene_expression.csv \ 
-            -meta cellType.csv
+       -d work_directory/ -o work_directory/ \  
+       -mtx gene_expression.csv \ 
+       -meta cellType.csv
 ```
 
 ### Result:
