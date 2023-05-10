@@ -22,6 +22,7 @@ Identifying marker genes in three plant species using three different methods:
 Convert species marker genes into orthologous genes by applying OrthoFinder
 
 #### Step 3, Find conserved orthologous marker genes (OMGs) between species:
+Present a comprehensive pairwise comparison of orthologous marker genes for cell type clusters between two plant species, with the aim of generating lists of conserved orthologous marker genes that could be used to identify cell types in other plant species.
 
 #### Step 4, Extract the conserved OMGs of homologous cell types among three species:
 
