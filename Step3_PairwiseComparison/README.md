@@ -7,7 +7,7 @@ These scripts present a comprehensive comparison of orthologous marker genes for
 * Use the output generated from step 1 and step 2 as input for this step. </br>
 * Select the top 200 marker genes identified in step 1:
 ```R
-Species = merge(Marker_genes, Orthologous_group, by.x = "gene", by.y = "Species") %>% 
+Species_1 = merge(Marker_genes, Orthologous_group, by.x = "gene", by.y = "Species") %>% 
           arrange( cluster, desc(avg_log2FC)) %>% 
           select("gene", "Orthogroup", "cluster", "avg_log2FC") %>% 
           group_by(cluster) %>% 
@@ -32,4 +32,6 @@ count_com_OG = function(Species1, Species2){
   colnames(two_plants) = unique(Species2$cluster) 
   return(two_plants[order(rownames(two_plants)), order(colnames(two_plants))])
 }
+
+df = as.data.frame(count_com_OG(Species_1, Species_2))
 ```
