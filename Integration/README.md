@@ -34,3 +34,5 @@ crossSpecies.combine <- FindClusters(crossSpecies.combine, resolution = 0.2)
 
 DimPlot(crossSpecies.combine, reduction = "umap", group.by = "orig.ident", cols = c("blue", "green", "orange"))
 ```
+
+* For detailed information, please refer to the above scripts.
