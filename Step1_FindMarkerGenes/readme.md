@@ -54,7 +54,7 @@ Species_seurat_marker <- FindAllMarkers(Species_seurat, only.pos = TRUE, min.pct
                                group_by(cluster) %>% 
                                 arrange(cluster, desc(avg_log2FC))
 ```
-For detail information check these scripts:
+For detailed information, please refer to these scripts:
 * 10_Umap_120622_Ara.Rmd 
 * 10_Umap_120622_Maize.Rmd
 * 10_Umap_120622_Rice.Rmd
