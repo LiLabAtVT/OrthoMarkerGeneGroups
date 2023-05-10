@@ -5,6 +5,7 @@
 
 ### Requirements:
 
+### Processing:
 #### Step 1, Find cell type marker genes:
 
 #### Step 2, Find orthologous groups by OrthoFinder:
