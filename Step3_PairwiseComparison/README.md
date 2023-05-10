@@ -15,7 +15,7 @@ Species = merge(Marker_genes, Orthologous_group, by.x = "gene", by.y = "Species"
 ```
 * Count the number of common OMGs between two species cell type clusters:
 ```R
-## Function create table of common OG gene names between 2 species
+# Function create table of common OG gene names between 2 species
 count_com_OG = function(Species1, Species2){
   clusters_S1 = unique(Species1$cluster); clusters_S2 = unique(Species2$cluster)
   two_plants <- matrix(nrow=length(clusters_S1), ncol=length(clusters_S2))
