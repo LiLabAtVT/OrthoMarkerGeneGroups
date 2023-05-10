@@ -32,4 +32,16 @@ Species_seurat <- RunUMAP(Species_seurat, reduction = "pca", dims = parameter)
 
 # Plot UMAP
 DimPlot(Species_seurat, reduction = "umap", label = TRUE)
+
+# Visualize marker genes from reference papers to label cell types in the input dataset
+DotPlot(object = Species_seurat, features = c("genes from reference papers"), cols = "RdYlBu",  col.min= -2, col.max = 2, dot.scale = 4) + 
+  theme(axis.text.x = element_text(size=9, angle = 90, hjust=1), 
+        axis.text.y = element_text(size=10, angle = 0, hjust=1), 
+        axis.title.y  = element_text(size=15, angle = 90, vjust=-4),
+        legend.title = element_text(size=10),
+        legend.text = element_text(size=8)) + 
+  xlab('Gene') +  
+  ylab('Cell type')
+
+FeaturePlot(Species_seurat, features = "genes from reference papers")
 ```
