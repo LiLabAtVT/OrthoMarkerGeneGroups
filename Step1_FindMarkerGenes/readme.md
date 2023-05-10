@@ -61,7 +61,8 @@ For detailed information, please refer to these scripts above:
 
 ### Find marker genes by SHAP+RF and SVM:
 Prepare a gene expression matrix file (.csv) and cell meta file (.csv) </br>
-```python SPmarker/SPmarker.py \ 
+```
+python SPmarker/SPmarker.py \ 
             -d work_directory/ -o work_directory/ \  
             -mtx gene_expression.csv \ 
             -meta cellType.csv
