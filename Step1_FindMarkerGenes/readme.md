@@ -47,3 +47,14 @@ DotPlot(object = Species_seurat, features = c("genes from reference papers"), co
 
 FeaturePlot(Species_seurat, features = "genes from reference papers")
 ```
+
+### Find marker genes by Seurat function:
+```R
+Species_seurat_marker <- FindAllMarkers(Species_seurat, only.pos = TRUE, min.pct = params, logfc.threshold = params) %>% 
+                               group_by(cluster) %>% 
+                                arrange(cluster, desc(avg_log2FC))
+```
+For detail information check these scripts:
+* 10_Umap_120622_Ara.Rmd 
+* 10_Umap_120622_Maize.Rmd
+* 10_Umap_120622_Rice.Rmd
