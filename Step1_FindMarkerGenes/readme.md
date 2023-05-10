@@ -54,7 +54,10 @@ Species_seurat_marker <- FindAllMarkers(Species_seurat, only.pos = TRUE, min.pct
                                group_by(cluster) %>% 
                                 arrange(cluster, desc(avg_log2FC))
 ```
-For detailed information, please refer to these scripts:
+For detailed information, please refer to these scripts above:
 * 10_Umap_120622_Ara.Rmd 
 * 10_Umap_120622_Maize.Rmd
 * 10_Umap_120622_Rice.Rmd
+
+### Find marker genes by SHAP+RF and SVM:
+Prepare a gene expression matrix file (.csv) and cell meta file (.csv)
