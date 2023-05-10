@@ -61,8 +61,16 @@ For detailed information, please refer to these scripts above:
 
 ### Find marker genes by SHAP+RF and SVM:
 Prepare a gene expression matrix file (.csv) and cell meta file (.csv) </br>
-`python SPmarker/SPmarker.py \
-            -d work_directory/ -o work_directory/ \
-            -mtx gene_expression.csv \
+`python SPmarker/SPmarker.py \ <br>
+            -d work_directory/ -o work_directory/ \  <br> 
+            -mtx gene_expression.csv \  <br>
             -meta cellType.csv
  `
+### Result:
+The collected output data is stored in the file named "112122_top200_Seurat_SHAP_SVM.xlsx".
+
+### References:
+Ryu, K. H., Huang, L., Kang, H. M., & Schiefelbein, J. (2019). Single-cell RNA sequencing resolves molecular relationships among individual plant cells. Plant physiology, 179(4), 1444-1456.
+Ortiz-Ramírez, C., Dias Araujo, P. C., Zhang, S., Demesa-Arevalo, E., Yan, Z., Xu, X., ... & Birnbaum, K. D. (2021). Ground tissue circuitry regulates organ complexity in cereal roots. BioRxiv, 2021-04.
+Zhang, T. Q., Chen, Y., Liu, Y., Lin, W. H., & Wang, J. W. (2021). Single-cell transcriptome atlas and chromatin accessibility landscape reveal differentiation trajectories in the rice root. Nature communications, 12(1), 2053.
+Yan, H., Lee, J., Song, Q., Li, Q., Schiefelbein, J., Zhao, B., & Li, S. (2022). Identification of new marker genes from plant single‐cell RNA‐seq data using interpretable machine learning methods. New Phytologist, 234(4), 1507-1520.
