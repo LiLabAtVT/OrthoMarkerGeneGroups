@@ -19,6 +19,7 @@ Identifying marker genes in three plant species using three different methods:
 * SHAP+RF </br>
 * SVM </br>
 #### Step 2, Find orthologous groups by OrthoFinder:
+Convert species marker genes into orthologous genes by applying OrthoFinder
 
 #### Step 3, Find conserved orthologous marker genes (OMGs) between species:
 
