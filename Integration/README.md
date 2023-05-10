@@ -6,5 +6,5 @@ This step aims to integrate gene expression data from three plant species to ide
 ### Requirements:
 * R version 4.1.0 or higher </br>
 * Matrix package </br>
-* Seurat package version 4.0 </br>
+* Seurat package version 4.1.1 </br>
 * Harmony package
