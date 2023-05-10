@@ -16,7 +16,7 @@ matrix = readMM(file = "matrix.mtx")
 rownames(matrix) = read.delim(file = "gene.tsv", header = FALSE)
 colnames(matrix) = read.delim(file = "barcode.tsv", header = FALSE)
 
-Species_seurat <- CreateSeuratObject(matrix, project = "Oryza")
+Species_seurat <- CreateSeuratObject(matrix, project = "Plant")
 Species_seurat <- subset(Species_seurat, subset = nFeature_RNA > 500 & nFeature_RNA < 6000 & nCount_RNA > 500 & nCount_RNA < 40000)
 
 # Normal and scale the data
