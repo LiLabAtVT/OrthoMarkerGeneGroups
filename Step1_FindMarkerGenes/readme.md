@@ -12,6 +12,7 @@ This repository contains scripts file for identifying marker genes in three plan
 ### Preprocessing:
 Label cell types for each cluster by employing marker genes from reference papers
 ```R
+# Load the input dataset
 matrix = readMM(file = "matrix.mtx")
 rownames(matrix) = read.delim(file = "gene.tsv", header = FALSE)
 colnames(matrix) = read.delim(file = "barcode.tsv", header = FALSE)
