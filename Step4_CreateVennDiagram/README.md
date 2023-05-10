@@ -41,3 +41,6 @@ cortex_plot = ggplot() +
                   plot.title = element_text(size=18, face= "bold", colour= "black", hjust = 0.5)
         )  
 ```
+
+### Result:
+The file named "ComMG_Seurat.xlsx" contains the list of common OMGs among three plant species, as well as their corresponding marker genes for each species.
