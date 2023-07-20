@@ -1,7 +1,7 @@
 # Cross-species single cell cluster annotation with orthologous marker gene groups
 
 ### Introduction:
-In this study, we compared single-cell RNA sequencing data from Arabidopsis, rice, and maize to identify conserved orthologous marker genes (OMGs) in various cell types. Our goal was to explore the significance of conserved OMGs for identifying cell types in non-model plants. 
+In this study, we compared single-cell RNA sequencing data from Arabidopsis, rice, and maize to identify conserved orthologous marker gene groups (OMGs) in various cell types. Our goal was to explore the significance of conserved OMGs for identifying cell types in non-model plants. 
 
 ### Requirements:
 * R version 4.1.0 or higher </br>
