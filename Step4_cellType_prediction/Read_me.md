@@ -10,4 +10,4 @@ Marker genes in the Data folder and (Orthogroups_091023_cleaned.tsv) output file
 Detailed code is in the Predict_Tomato_root.Rmd and Predict_Tomato_root.Rmd to predict Tomato root and shoot cell types.
 
 ## Cell type comparison across 15 plant species:
-This script maps cell types of 268 cell type clusters in 15 diverse plant species together. 
+This Heatmap_cellType_comparison_across15species.Rmd script maps cell types of 268 cell type clusters in 15 diverse plant species together. 
