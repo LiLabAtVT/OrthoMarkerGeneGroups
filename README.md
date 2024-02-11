@@ -22,11 +22,12 @@ Convert species marker genes into orthologous genes by applying OrthoFinder
 #### Step 3, Find conserved orthologous marker genes (OMGs) between species:
 Present a comprehensive pairwise comparison of orthologous marker genes for cell type clusters between two plant species, with the aim of generating lists of conserved orthologous marker genes that could be used to identify cell types in other plant species.
 
-#### Step 4, Extract the conserved OMGs of homologous cell types among three species:
-Produce Venn diagrams that compare the shared OMGs among three plant species, with the purpose of generating lists of conserved OMGs that can aid in identifying cell types in other plant species.
+#### Step 4, Predict cell types in a query species:
+Predict cell types in Tomato root and shoot.
 
 #### Step 5, Web brower:
 Visualize gene expression data across three different plant species </br>
 
 
-### Reference:
+### Contact:
+If you have any questions regarding the OMG methods, please contact me at tnchau@vt.edu
