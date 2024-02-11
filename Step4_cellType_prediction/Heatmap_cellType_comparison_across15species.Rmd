@@ -1,0 +1,231 @@
+---
+title: "pHeatmap with clustering"
+output: html_document
+date: "2023-09-14"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(reshape2); library(tidyverse)
+```
+
+
+```{r}
+## Function create table that counts common OG gene names between 2 species
+## Save the numbers to the table
+count_com_OG_number = function(Species1, Species2){
+  clusters_S1 = unique(Species1$clusterName); clusters_S2 = unique(Species2$clusterName)
+  two_plants <- matrix(nrow=length(clusters_S1), ncol=length(clusters_S2))
+  for(i in 1:length(clusters_S1)){
+    for(j in 1:length(clusters_S2)){
+      list_overlap = intersect(Species1[Species1$clusterName == clusters_S1[i],]$Orthogroup, Species2[Species2$clusterName == clusters_S2[j],]$Orthogroup)
+      num_overlap = length(list_overlap)
+    
+      two_plants[i,j] = num_overlap
+    }
+  }
+  rownames(two_plants) = unique(Species1$clusterName)
+  colnames(two_plants) = unique(Species2$clusterName) 
+  return(two_plants[order(rownames(two_plants)), order(colnames(two_plants))])
+}
+
+```
+
+
+```{r}
+## Function create table of common OG gene names between 2 species
+## Save the common OG name to the table
+count_com_OG = function(Species1, Species2){
+  clusters_S1 = unique(Species1$clusterName); clusters_S2 = unique(Species2$clusterName)
+  two_plants <- data.frame(matrix(vector("list", length(clusters_S1) * length(clusters_S2)), 
+                                  nrow = length(clusters_S1), 
+                                  ncol = length(clusters_S2)))
+  for(i in 1:length(clusters_S1)){
+    for(j in 1:length(clusters_S2)){
+      list_overlap = intersect(Species1[Species1$clusterName == clusters_S1[i],]$Orthogroup, Species2[Species2$clusterName == clusters_S2[j],]$Orthogroup)
+      two_plants[[i,j]] = list(list_overlap)
+      
+    }
+  }
+  rownames(two_plants) = unique(Species1$clusterName)
+  colnames(two_plants) = unique(Species2$clusterName)
+  return(two_plants[order(rownames(two_plants)), order(colnames(two_plants))])
+}
+```
+
+
+
+```{r}
+Heatmap_with_count_comOMG = function(reference_data, query_data){
+# Add a column that combine all common OG in the same row, and add the row that combine all lists in the same column
+df = count_com_OG(reference_data, query_data)
+write.csv(count_com_OG_number(reference_data, query_data), "/Users/tranchau/Documents/SC_crossSpecies/MG_scPlantDB/Data_fromHeatmap_100323/commonOMG_11species.csv")
+colnames(df) = gsub(" ", "_",colnames(df))
+
+# Add row that sum for each column
+new_row <- list()
+for (col in names(df)) {
+  concatenated_list <- unlist(df[[col]], use.names = FALSE)
+  new_row[[col]] <- list(concatenated_list)
+}
+new_row_df <- t(enframe(new_row, name = NULL)) %>% as_tibble() 
+colnames(new_row_df) = colnames(df)
+row.names(new_row_df) <- "new_row"
+df <- rbind(df, new_row_df)
+
+
+# Add column that sum for each row
+new_col <- vector("list", nrow(df))
+for (i in 1:nrow(df)) {
+  concatenated_list <- list()
+  for (col in names(df)) {
+    concatenated_list <- c(concatenated_list, unlist(df[[col]][[i]]))
+  }
+  new_col[[i]] <- unlist(concatenated_list, recursive = TRUE)
+}
+df$new_col <- new_col
+########################################
+
+
+
+p_value_dataframe = df[1: (nrow(df) - 1), 1: (ncol(df) -1)] #Create a dataframe p-value for each pair comparison
+
+for (i in rownames(p_value_dataframe)){
+  for (j in colnames(p_value_dataframe)){
+    frame = df[c(i, "new_row"), c(j, "new_col")]
+    # 2 matrices, 1 for common OG in list, 1 count the number of OG
+    frame_int = data.frame(Column1 = c(0, 0), Column2 = c(0, 0))
+    frame_int[2,2] = length(setdiff(setdiff(setdiff(frame[2,2][[1]], frame[1,2][[1]]), frame[2,1][[1]][[1]]), frame[1,1][[1]][[1]]))
+    frame_int[1,2] = length(setdiff(frame[1,2][[1]], frame[1,1][[1]][[1]]))
+    frame_int[2,1] = length(setdiff(frame[2,1][[1]][[1]], frame[1,1][[1]][[1]]))
+    frame_int[1,1] = length(frame[1,1][[1]][[1]])
+    
+    p_value_dataframe[i,j] = fisher.test(frame_int, alternative = "greater")$p.value
+  }
+}
+adjusted_pvalue_dataframe <- p_value_dataframe #Create another frame for FDR
+adjusted_pvalue_dataframe[] = p.adjust(unlist(p_value_dataframe), method = "BH")
+write.csv(adjusted_pvalue_dataframe, "/Users/tranchau/Documents/SC_crossSpecies/MG_scPlantDB/Data_fromHeatmap_100323/pvalue_11species.csv")
+transform = -log10(adjusted_pvalue_dataframe)
+
+write.csv(transform, "/Users/tranchau/Documents/SC_crossSpecies/MG_scPlantDB/Data_fromHeatmap_100323/negative_log_pvalue_11species.csv")
+
+transform = ifelse(transform > 50, 50, ifelse(transform > 30, 30, ifelse(transform > 20, 20, ifelse(transform > 10, 10, ifelse(transform > 5, 5, ifelse(transform > 3, 3, ifelse(transform > 2, 2, 0)))))))
+
+return(transform)
+}
+```
+
+
+```{r}
+Ortho = read.delim( "/Users/tranchau/Documents/SC_crossSpecies/MG_scPlantDB/ortho_091023_extract.tsv", header = TRUE, sep = "\t")
+Marker_Gene = read.delim( "/Users/tranchau/Documents/SC_crossSpecies/MG_scPlantDB/MG_all_list.tsv", header = TRUE, sep = "\t")
+Marker_Gene$clusterName = paste(Marker_Gene$species, Marker_Gene$tissue, Marker_Gene$clusterName)
+for(i in unique(Marker_Gene$species)){
+  print(i)
+  print(table(Marker_Gene[Marker_Gene$species == i,]$tissue))
+}
+table(Marker_Gene$tissue)
+```
+
+
+```{r}
+query = Marker_Gene[  ((Marker_Gene$species == "arabidopsis_thaliana") & (Marker_Gene$tissue == "Hypocotyl callus")) |
+                      ((Marker_Gene$species == "arabidopsis_thaliana") & (Marker_Gene$tissue == "Inflorescence")) |
+                      ((Marker_Gene$species == "arabidopsis_thaliana") & (Marker_Gene$tissue == "Leaf")) |
+                      ((Marker_Gene$species == "arabidopsis_thaliana") & (Marker_Gene$tissue == "Pollen")) |
+                      ((Marker_Gene$species == "arabidopsis_thaliana") & (Marker_Gene$tissue == "Root")) |
+                      ((Marker_Gene$species == "arabidopsis_thaliana") & (Marker_Gene$tissue == "Shoot axis apex")) |
+                        
+                      ((Marker_Gene$species == "oryza_sativa") & (Marker_Gene$tissue == "Inflorescence")) |
+                      ((Marker_Gene$species == "oryza_sativa") & (Marker_Gene$tissue == "Leaf")) |
+                      ((Marker_Gene$species == "oryza_sativa") & (Marker_Gene$tissue == "Pistil")) |
+                      ((Marker_Gene$species == "oryza_sativa") & (Marker_Gene$tissue == "Root")) |
+                      ((Marker_Gene$species == "oryza_sativa") & (Marker_Gene$tissue == "Root;Leaf")) |
+                        
+                      #((Marker_Gene$species == "triticum_aestivum") & (Marker_Gene$tissue == "Root")) |
+                        
+                      ((Marker_Gene$species == "zea_mays") & (Marker_Gene$tissue == "Ear inflorescence")) |
+                      ((Marker_Gene$species == "zea_mays") & (Marker_Gene$tissue == "Leaf")) |
+                      ((Marker_Gene$species == "zea_mays") & (Marker_Gene$tissue == "Root")) |
+                      ((Marker_Gene$species == "zea_mays") & (Marker_Gene$tissue == "Shoot axis apex")) |
+                        
+                      ((Marker_Gene$species == "brassica_rapa") & (Marker_Gene$tissue == "Leaf")) |
+                      ((Marker_Gene$species == "catharanthus_roseus") & (Marker_Gene$tissue == "Leaf")) |
+                      ((Marker_Gene$species == "fragaria_vesca") & (Marker_Gene$tissue == "Leaf")) |
+                      ((Marker_Gene$species == "gossypium_bickii") & (Marker_Gene$tissue == "Seed")) |
+                      #((Marker_Gene$species == "gossypium_hirsutum") & (Marker_Gene$tissue == "Ovule outer integument")) |
+                      #((Marker_Gene$species == "glycine_max") & (Marker_Gene$tissue == "Root; Root nodule")) | 
+                      ((Marker_Gene$species == "manihot_esculenta") & (Marker_Gene$tissue == "Tuberous root"))| 
+                      #((Marker_Gene$species == "medicago_truncatula") & (Marker_Gene$tissue == "Root"))|
+                      ((Marker_Gene$species == "nicotiana_attenuata") & (Marker_Gene$tissue == "Corolla")) |
+
+                      ((Marker_Gene$species == "populus_alba_var_pyramidalis") & (Marker_Gene$tissue == "Stem")) |
+                      ((Marker_Gene$species == "populus_alba_x_populus_glandulosa") & (Marker_Gene$tissue == "Stem")) |
+                      ((Marker_Gene$species == "solanum_lycopersicum") & (Marker_Gene$tissue == "Root")) |
+                      ((Marker_Gene$species == "solanum_lycopersicum") & (Marker_Gene$tissue == "Shoot axis apex")) ,]
+query_frame = merge(query, Ortho, by.x = "gene", by.y = "MarkerGene", all.x = TRUE) %>% group_by(species) %>% arrange(clusterName, desc(avg_log2FC)) %>% group_by(clusterName) %>% slice(1:200)
+
+#my_colors <- colorRampPalette(rev(c("blue", "white", "red")))(50)
+
+pdf("/Users/tranchau/Documents/SC_crossSpecies/MG_scPlantDB/Figure_091023/Unique_pHeatmap_log_cutoff_wTomRoot_100323_11species.pdf", width = 40, height = 40)
+pheatmap::pheatmap(t(as.matrix(Heatmap_with_count_comOMG(query_frame, query_frame))))
+dev.off()
+
+
+#pdf("/Users/tranchau/Documents/SC_crossSpecies/MG_scPlantDB/Figure_091023/Unique_pHeatmap_091923.pdf", width = 45, height = 45)
+#pheatmap::pheatmap(t(as.matrix(Heatmap_with_count_comOMG(query_frame, query_frame))))
+#dev.off()
+```
+
+
+# Rachel's data for ATH instead of Cookies's data
+```{r}
+ATH = readRDS("/Users/tranchau/Documents/SC_crossSpecies/092522_allSteps/Data/ATH_Marker_060123_Rachel.rds")
+ATH$species = "arabidopsis_thaliana"
+Maize = readRDS("/Users/tranchau/Documents/SC_crossSpecies/092522_allSteps/Data_083123/MG_090823_Maize_Root_03.RData")
+Maize$species = "zea_mays"
+Rice = readRDS("/Users/tranchau/Documents/SC_crossSpecies/092522_allSteps/Data/MG_092522_Rice_05.RData")
+Rice$species = "oryza_sativa"
+Tom = readRDS("/Users/tranchau/Documents/SC_crossSpecies/092522_allSteps/Data/MG_092522_Tom_05_110899.RData")
+Tom$species = "solanum_lycopersicum"
+
+Found_MG = rbind(ATH, Tom, Rice, Maize)
+Found_MG$clusterName = paste(Found_MG$species, Found_MG$cluster)
+Found_MG_after = merge(Found_MG, Ortho, by.x = "gene", by.y = "MarkerGene") %>% 
+  group_by(species) %>% 
+  arrange(clusterName, desc(avg_log2FC)) %>% 
+  group_by(clusterName) %>% 
+  slice(1:200)
+
+
+
+query = Marker_Gene[ 
+                      ((Marker_Gene$species == "brassica_rapa") & (Marker_Gene$tissue == "Leaf")) |
+                      ((Marker_Gene$species == "catharanthus_roseus") & (Marker_Gene$tissue == "Leaf")) |
+                      ((Marker_Gene$species == "fragaria_vesca") & (Marker_Gene$tissue == "Leaf")) |
+                      ((Marker_Gene$species == "gossypium_bickii") & (Marker_Gene$tissue == "Seed")) |
+                      ((Marker_Gene$species == "gossypium_hirsutum") & (Marker_Gene$tissue == "Ovule outer integument")) |
+                      ((Marker_Gene$species == "glycine_max") & (Marker_Gene$tissue == "Root; Root nodule")) | 
+                      ((Marker_Gene$species == "manihot_esculenta") & (Marker_Gene$tissue == "Tuberous root"))| 
+                      ((Marker_Gene$species == "medicago_truncatula") & (Marker_Gene$tissue == "Root"))|
+                      ((Marker_Gene$species == "nicotiana_attenuata") & (Marker_Gene$tissue == "Corolla")) |
+
+                      ((Marker_Gene$species == "populus_alba_var_pyramidalis") & (Marker_Gene$tissue == "Stem")) |
+                      ((Marker_Gene$species == "populus_alba_x_populus_glandulosa") & (Marker_Gene$tissue == "Stem")) |
+                      ((Marker_Gene$species == "solanum_lycopersicum") & (Marker_Gene$tissue == "Shoot axis apex")) |
+
+                      ((Marker_Gene$species == "triticum_aestivum") & (Marker_Gene$tissue == "Root")),]
+query_frame = merge(query, Ortho, by.x = "gene", by.y = "MarkerGene", all.x = TRUE) %>% group_by(species) %>% arrange(clusterName, desc(avg_log2FC)) %>% group_by(clusterName) %>% slice(1:200)
+
+
+#my_colors <- colorRampPalette(rev(c("blue", "white", "red")))(50)
+
+#pdf("/Users/tranchau/Documents/SC_crossSpecies/MG_scPlantDB/Figure_091023/Unique_pHeatmap_log_cutoff_Root_orgOMG_Rachel.pdf", width = 16, height = 35)
+pheatmap::pheatmap(t(as.matrix(Heatmap_with_count_comOMG(Found_MG_after, query_frame))))
+#dev.off()
+
+```
