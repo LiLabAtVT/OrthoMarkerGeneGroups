@@ -28,7 +28,7 @@ Predict cell types in Tomato root and shoot.
 
 #### Step 5, Web brower:
 Perform cell types comparison across 15 plant species </br>
-Browser: http://orthomarkergenes.org/
+Browser: http://orthomarkergenes.org/ </br>
 Browser tutorial: https://youtu.be/Jb4uMq394Sg
 
 ### Contact:
