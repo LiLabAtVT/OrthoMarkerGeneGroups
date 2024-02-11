@@ -69,7 +69,7 @@ python SPmarker/SPmarker.py \
 ```
 
 ### Result:
-The collected output data is stored in the file named "112122_top200_Seurat_SHAP_SVM.xlsx".
+The collected output data for Arabidopsis, maize, and rice marker genes using three methods Seurat, Random forest, and SVM is stored in the file named "112122_top200_Seurat_SHAP_SVM.xlsx".
 
 ### References:
 * Ryu, K. H., Huang, L., Kang, H. M., & Schiefelbein, J. (2019). Single-cell RNA sequencing resolves molecular relationships among individual plant cells. Plant physiology, 179(4), 1444-1456. </br>
