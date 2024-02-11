@@ -59,7 +59,9 @@ For detailed information, please refer to these scripts above:
 * 10_Umap_120622_Ara.Rmd 
 
 ### Result:
-The output data is stored in the file named "MG_092522_Ath_05.RData".
+The output data is stored in the file named "MG_120923_Ath_05.RData".
+
+MG_120923_Maize_05.RData and MG_120923_Rice_05.RData contain marker genes of maize and rice.
 
 ### References:
 * Ryu, K. H., Huang, L., Kang, H. M., & Schiefelbein, J. (2019). Single-cell RNA sequencing resolves molecular relationships among individual plant cells. Plant physiology, 179(4), 1444-1456. </br>
