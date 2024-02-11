@@ -55,14 +55,6 @@ DimPlot(Arabidopsis_seurat_rename, reduction = "umap", label = TRUE) + NoLegend(
 ```
 
 ```{r}
-# SPMarker processing
-# SPMarker (optional)
-Arabidopsis_seurat_rename@meta.data$cellType = Idents(Arabidopsis_seurat_rename)
-Arabidopsis_seurat_rename@meta.data$prob = 1
-Ath_cell = Arabidopsis_seurat_rename@meta.data %>% select(cellType, prob)
-```
-
-```{r}
 # Sort the dotplot cell type cluster
 Idents(Arabidopsis_seurat_rename) <- factor(Idents(Arabidopsis_seurat_rename), levels= c("Xylem", "Stele1", "Stele2", "Phloem", "Cortex","Unknown",  "Trichoblast1", "Trichoblast2", "Atrichoblast1", "Atrichoblast2", "Endodermis", "Root_cap", "Meristem_Endocortex"))
 
@@ -82,9 +74,6 @@ DotPlot(object = Arabidopsis_seurat_rename, features = c("AT1G68810", "AT4G35350
 # Make the plot to show the expression of a certian gene
 FeaturePlot(Arabidopsis_seurat, features = "AT5G67400", cols = c("gray", "green", "darkgreen"))
 ```
-
-
-
 
 ```{r}
 ## Find cell type marker gene
