@@ -4,7 +4,7 @@
 These scripts present a comprehensive comparison of orthologous marker genes for cell type clusters across three plant species, with the aim of generating lists of conserved orthologous marker genes that could be used to identify cell types in other plant species.
 
 ### Processing:
-* Use the output generated from step 1 (Marker gene files) and step 2 (Orthogroups_091023_cleaned.tsv - the unzipped version of Orthogroups_091023_cleaned.tsv.zip) as input for this step. </br>
+* Use the output generated from step 1 (MG_092522_Ath_05.RData) and step 2 (Orthogroups_091023_cleaned.tsv - the unzipped version of Orthogroups_091023_cleaned.tsv.zip) as input for this step. </br>
 * Select the top 200 marker genes identified in step 1:
 ```R
 Species_1 = merge(Marker_genes, Orthologous_group, by.x = "gene", by.y = "Species") %>% 
