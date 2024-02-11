@@ -2,6 +2,7 @@
 
 This repository contains some example script files for identifying marker genes in Arabidopsis, maize, and rice using three different methods: Seurat, SHAP+RF, and SVM.
 
+10_Umap_120622_Ara.Rmd, 10_Umap_120622_Maize.Rmd, and 10_Umap_120622_Rice.Rmd: R script to find Arabidopsis', maize's, and rice's marker genes using Seurat package
 
 
 ### Requirements: 
