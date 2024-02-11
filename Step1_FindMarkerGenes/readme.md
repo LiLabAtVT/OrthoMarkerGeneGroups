@@ -1,6 +1,6 @@
 # Identify marker genes using three methods
 
-This repository contains scripts file for identifying marker genes in three plant species using three different methods: Seurat, SHAP+RF, and SVM.
+This repository contains some example script files for identifying marker genes in Arabidopsis, maize, and rice using three different methods: Seurat, SHAP+RF, and SVM.
 
 ### Requirements: 
 * R version 4.1.0 or higher </br>
