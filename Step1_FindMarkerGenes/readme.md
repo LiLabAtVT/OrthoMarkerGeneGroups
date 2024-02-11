@@ -10,7 +10,8 @@ This repository contains R script files for identifying marker genes in Arabidop
 `git clone https://github.com/LiLabAtVT/SPMarker.git`
 
 ### Preprocessing:
-Label cell types for each cluster by employing marker genes from reference papers
+Preprocess data to generate clusters and identify cell types for each cluster: 
+
 ```R
 # Load the input dataset
 matrix = readMM(file = "matrix.mtx")
@@ -56,17 +57,8 @@ Species_seurat_marker <- FindAllMarkers(Species_seurat, only.pos = TRUE, min.pct
 ```
 For detailed information, please refer to these scripts above:
 * 10_Umap_120622_Ara.Rmd 
-* 10_Umap_120622_Maize.Rmd
-* 10_Umap_120622_Rice.Rmd
 
-### Find marker genes by SHAP+RF and SVM:
-Prepare a gene expression matrix file (.csv) and cell meta file (.csv) </br>
-```
-python SPmarker/SPmarker.py \ 
-       -d work_directory/ -o work_directory/ \  
-       -mtx gene_expression.csv \ 
-       -meta cellType.csv
-```
+Output marker genes is save in MG_092522_Ath_05.RData
 
 ### Result:
 The collected output data for Arabidopsis, maize, and rice marker genes using three methods Seurat, Random forest, and SVM is stored in the file named "112122_top200_Seurat_SHAP_SVM.xlsx".
