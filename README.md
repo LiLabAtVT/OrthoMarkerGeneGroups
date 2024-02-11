@@ -14,10 +14,8 @@ In this study, we compared single-cell RNA sequencing data from Arabidopsis, ric
 
 ### Processing:
 #### Step 1, Find cell type marker genes:
-Identifying marker genes in three plant species using three different methods: 
-* Seurat </br>
-* SHAP+RF </br>
-* SVM </br>
+Identifying marker genes in three plant species using Seurat package
+
 #### Step 2, Find orthologous groups by OrthoFinder:
 Convert species marker genes into orthologous genes by applying OrthoFinder
 
