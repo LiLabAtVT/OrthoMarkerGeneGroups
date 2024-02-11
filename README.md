@@ -15,6 +15,7 @@ Despite the widespread application of single-cell RNA sequencing (scRNA-seq) inp
 ### Processing:
 #### Step 1, Find cell type marker genes:
 Identifying marker genes in three plant species using Seurat package
+Tutorial: https://youtu.be/oliRmER1rXw
 
 #### Step 2, Find orthologous groups by OrthoFinder:
 Convert species marker genes into orthologous genes by applying OrthoFinder
@@ -26,8 +27,8 @@ Present a comprehensive pairwise comparison of orthologous marker genes for cell
 Predict cell types in Tomato root and shoot.
 
 #### Step 5, Web brower:
-Visualize gene expression data across three different plant species </br>
-
+Perform cell types comparison across 15 plant species </br>
+Browser tutorial: https://youtu.be/Jb4uMq394Sg
 
 ### Contact:
 If you have any questions regarding the OMG methods, please contact me at tnchau@vt.edu
