@@ -5,7 +5,7 @@ Despite the widespread application of single-cell RNA sequencing (scRNA-seq) inp
 
 ![Test](./Figures/pipeline.jpg)
 
-<div style="overflow-y: auto; height: 110px;" markdown="block">
+<div style="overflow: auto; height: 110px;" markdown="block">
 
 
 |      | p_val                 | avg_log2FC        | pct.1 | pct.2 | p_val_adj             | cluster             | gene      |
