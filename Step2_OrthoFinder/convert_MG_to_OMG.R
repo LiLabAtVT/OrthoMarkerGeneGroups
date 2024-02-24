@@ -1,4 +1,4 @@
-clean_orthogroups_gene_names <- function(orthogroups, species_name) {
+clean_OG <- function(orthogroups, species_name) {
   # Check if the species_name column exists in the orthogroups DataFrame
   if (!species_name %in% colnames(orthogroups)) {
     stop("Species name is not in the orthogroups table")
@@ -15,3 +15,13 @@ clean_orthogroups_gene_names <- function(orthogroups, species_name) {
 }
 
 #clean_orthogroups_gene_names(orthofinder, "Arabidopsis")
+
+# Merge marker genes and OG genes table:
+merge_MG_OG = function(Marker_genes, orthogroup, species){
+  Species_MG_OG = merge(Marker_genes, orthogroup, by.x = "gene", by.y = species) %>% 
+              arrange( cluster, desc(avg_log2FC)) %>% 
+              dplyr:::select("gene", "Orthogroup", "cluster", "avg_log2FC") %>% 
+              group_by(cluster) %>% 
+              top_n(200)
+  return(Species_MG_OG)
+}

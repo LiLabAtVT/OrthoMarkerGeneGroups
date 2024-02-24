@@ -58,3 +58,62 @@ test_significant = function(Species1, Species2, FDR_threshold){
   return(df1)
 }
 
+# This function to extract table from the heatmap
+extract_table = function(Species1, Species2, FDR_threshold){
+  
+  df = as.data.frame(count_com_OG(Species1, Species2))
+  df$cell_type = rownames(df) # Add column to make 2 variables when using melt function
+
+  # Add a row that sums up the values in all other rows
+  sumrow = df %>% dplyr:::select(-cell_type) %>% colSums() # sum all numeric row in the dataframe
+  sum_h = c(sumrow, "sum_h") 
+  df = rbind(df, sum_h) # After merging two data frames, datatype in dataframe will be changed into character
+  df = df %>% retype() # %>% as.data.frame(df) # function retype will change the data into the correct type
+
+  # Add a column to sum up all values in other columns
+  df$sum_v = df %>% dplyr:::select(-cell_type) %>% rowSums() # sum all numeric columns in the dataframe
+  rownames(df) <- df$cell_type  
+
+  # Calculate the p-value from Fisher exact test
+  p_value_dataframe = df[1: (nrow(df) - 1), 1: (ncol(df) -2)]
+  conclusionTable = p_value_dataframe # Reject the null hypothesis if p-value < 0.01
+  for (i in rownames(p_value_dataframe)){
+    for (j in colnames(p_value_dataframe)){
+      frame = df[c(i, "sum_h"), c(j, "sum_v")]
+      frame[2,2] = frame[2,2] - frame[1,2] - frame[2,1] + frame[1,1]
+      frame[1,2] = frame[1,2] - frame[1,1]
+      frame[2,1] = frame[2,1] - frame[1,1]
+      p_value_dataframe[i,j] = fisher.test(frame, alternative = "greater")$p.value
+    }
+  }
+  # calculate FDR to correct for multiple tests
+  adjusted_pvalue_dataframe <- p_value_dataframe
+  adjusted_pvalue_dataframe[] = p.adjust(unlist(p_value_dataframe), method = "BH") 
+  conclusionTable = ifelse(adjusted_pvalue_dataframe < FDR_threshold, "Reject", "Fail")
+
+  # merge test column to the count common OMGs table
+  table_count = as.matrix(count_com_OG(Species1, Species2))
+  df1 = melt(table_count) 
+  df1$test = melt(conclusionTable)$value 
+  
+  adjusted_pvalue_dataframe$rownames = rownames(adjusted_pvalue_dataframe)
+  df_adjust_pvalue = melt(adjusted_pvalue_dataframe, id.vars = "rownames")
+  df1$FDR = df_adjust_pvalue$value
+
+  X_species_cluster_numOMG = Species1 %>%
+                      group_by(cluster) %>%
+                      summarize(X_species_numOMG = n_distinct(Orthogroup))
+
+  Y_species_cluster_numOMG = Species2 %>%
+                      group_by(cluster) %>%
+                      summarize(Y_species_numOMG = n_distinct(Orthogroup))
+##
+  extractTable = merge(merge(df1, X_species_cluster_numOMG, by.x = "X1", by.y = "cluster"), Y_species_cluster_numOMG, by.x = "X2", by.y = "cluster") 
+  names(extractTable)[1] = "Y_species_clusters"
+  names(extractTable)[2] = "X_species_clusters"
+  names(extractTable)[3] = "comOMG"
+  extractTable <- extractTable[, c("X_species_clusters", "X_species_numOMG", "Y_species_clusters", "Y_species_numOMG", "comOMG", "FDR", "test")] %>% arrange(FDR)
+  return(extractTable)
+
+}
+
