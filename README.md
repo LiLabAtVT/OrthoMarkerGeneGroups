@@ -98,7 +98,7 @@ Extract marker genes of common OMGs between two species clusters
 extract_gene(Ath_MG_OG, Oryza_MG_OG, "Cortex", "Cortex") 
 ```
 ![table_genes](./Figures/table_genes.png)
-Detailed information can be found in the R markdown in step 3 folder
+Detailed information can be found in the R markdown PairwiseComparison_Seurat.Rmd
 
 #### Step 4, Predict cell types in a query species:
 Predict cell types in Tomato root and shoot.
@@ -107,15 +107,15 @@ Predict cell types in Tomato root and shoot.
 # Load packages
 library(ggplot2); library(reshape); library(hablar)
 
-# Function create table of common OG gene names between 2 species
+# Function create table of common OMGs between 2 species
 source("Step3_PairwiseComparison/count_comOMGs.R")
-df1 = test_significant(Ath_MG_OG, Tomato_MG_OG, 0.01)
+df_commonOMGs = test_significant(Ath_MG_OG, Tomato_MG_OG, 0.01)
 
 # Create the plot with ggplot
-plot_ATH_Tom = generate_plot_comparison(df1, "Arabidopsis", "Tomato")
-
-plot_ATH_Tom
+plot_ATH_Tomato = generate_plot_prediction(df_commonOMGs, "Arabidopsis", "Tomato")
+plot_ATH_Tomato
 ```
+
 ![Test](./Figures/ATH_Tom_prediction_root.png)
 Based on the red boxes highlighted by statisical test, we can predict the cell type for tomato root using arabidopsis marker genes as a reference dataset. </br>
 Detailed information for root and shoot prediction can be found in step 4 folder.
