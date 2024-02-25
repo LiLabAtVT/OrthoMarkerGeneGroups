@@ -1,169 +1,54 @@
 ---
-title: "Untitled"
+title: "Predict the Tomato Root"
 output: html_document
-date: "2023-08-15"
+date: "2024-02-25"
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-
-
-
+# Working directory
 ```{r}
-MG_ara = readRDS("/Users/tranchau/Documents/SC_crossSpecies/092522_allSteps/120423_Submission/Figure2/Data/MG_120923_ATH_05.RData")
-
-MG_tom = readRDS("/Users/tranchau/Documents/SC_crossSpecies/092522_allSteps/Data/MG_082323_Tom_05_Default15clusters.RData")
+setwd("/Users/tranchau/Documents/VSCode/OrthoMarkerGeneGroups") # Make sure the working directory at OrthoMarkerGeneGroups folder
 ```
 
+# Skip step 1 if you have marker genes
+
+# Step 2
 ```{r}
-# Clean ortholog find
-orthofinder = read.csv("/Users/tranchau/Documents/SC_crossSpecies/092522_allSteps/120423_Submission/Figure2/Data/Orthogroups_091023_cleaned.tsv", header = TRUE, sep = "\t")
+# load the orthologous groups which is the output from the orthofinder package
+orthofinder = read.csv("Step2_OrthoFinder/Orthogroups.tsv", header = TRUE, sep = "\t") # Unzip the orthogroups.tsv.zip
 
-library(tidyr)
-library(dplyr)
-library("stringr") 
+source("Step2_OrthoFinder/convert_MG_to_OMG.R")
+og_ath = clean_OG(orthofinder, "Arabidopsis_thaliana") # EX: Arabidopsis_thaliana
+og_tom = clean_OG(orthofinder, "Solanum_lycopersicum") # EX: Tomato (Solanum_lycopersicum)
 
-og_ath = orthofinder[,c("Orthogroup", "Arabidopsis")] %>%
-  mutate(Arabidopsis = strsplit(as.character(Arabidopsis), ",")) %>% # Split long string in a row into multiple rows
-  unnest(Arabidopsis) %>%
-  mutate(Arabidopsis = str_extract(Arabidopsis, "[^.]+"))  %>% # Extract all character before the first dot
-  mutate(across(where(is.character), str_trim)) %>%  # Remove white spaces
-  distinct(Arabidopsis, .keep_all = TRUE)  # Remove duplicated rows based on Arabidopsis column
-  #remove_rownames %>% column_to_rownames(var="Arabidopsis")
+# load marker genes found in step 1, two examples of Arabidospis and Tomato 
+MG_ara = readRDS("Step1_FindMarkerGenes/MG_120923_ATH_05.RData")
+MG_tom = readRDS("Step1_FindMarkerGenes/MG_082323_Tom_05_Default15clusters.RData")
 
-og_tom = orthofinder[,c("Orthogroup", "Solanum_lycopersicum")] %>%
-  mutate(Solanum_lycopersicum = strsplit(as.character(Solanum_lycopersicum), ",")) %>% # Split long string in a row into multiple rows
-  unnest(Solanum_lycopersicum) %>%
-  mutate(Solanum_lycopersicum = str_extract(Solanum_lycopersicum, "[^.]+"))  %>% # Extract all character before the first dot
-  mutate(across(where(is.character), str_trim)) %>%  # Remove white spaces
-  distinct(Solanum_lycopersicum, .keep_all = TRUE)  # Remove duplicated rows based on Solanum column
-  #remove_rownames %>% column_to_rownames(var="Solanum") 
+# Merge marker gene and OG genes
+Ath_MG_OG = merge_MG_OG(MG_ara, og_ath, "Arabidopsis_thaliana")  # EX: Arabidopsis_thaliana 
+Tomato_MG_OG = merge_MG_OG(MG_tom, og_tom, "Solanum_lycopersicum")  # EX: Tomato
 ```
 
+# Skip step 3 for comparison
 
+# Step 4
 ```{r}
-Ath_MG_OG = merge(MG_ara, og_ath, by.x = "gene", by.y = "Arabidopsis") %>% arrange( cluster, desc(avg_log2FC)) %>% dplyr::select("gene", "Orthogroup", "cluster", "avg_log2FC") %>% group_by(cluster) %>% top_n(200)
+# Load packages
+library(ggplot2); library(reshape); library(hablar)
 
+# Function create table of common OMGs between 2 species
+source("Step3_PairwiseComparison/count_comOMGs.R")
+df_commonOMGs = test_significant(Ath_MG_OG, Tomato_MG_OG, 0.01)
 
-# Tomato #############################
-Tomato_MG_OG = merge(MG_tom, og_tom, by.x = "gene", by.y = "Solanum_lycopersicum") %>% arrange( cluster, desc(avg_log2FC)) %>% dplyr::select("gene", "Orthogroup", "cluster", "avg_log2FC") %>% group_by(cluster) %>% top_n(200)
+# Create the plot with ggplot
+plot_ATH_Tomato = generate_plot_prediction(df_commonOMGs, "Arabidopsis", "Tomato")
+plot_ATH_Tomato
 
-## Function create table of common OG gene names between 2 species
-count_com_OG = function(Species1, Species2){
-  clusters_S1 = unique(Species1$cluster); clusters_S2 = unique(Species2$cluster)
-  two_plants <- matrix(nrow=length(clusters_S1), ncol=length(clusters_S2))
-  for(i in 1:length(clusters_S1)){
-    for(j in 1:length(clusters_S2)){
-      list_overlap = intersect(Species1[Species1$cluster == clusters_S1[i],]$Orthogroup, Species2[Species2$cluster == clusters_S2[j],]$Orthogroup)
-      num_overlap = length(list_overlap)
-    
-      two_plants[i,j] = num_overlap
-    }
-  }
-  rownames(two_plants) = unique(Species1$cluster)
-  colnames(two_plants) = unique(Species2$cluster) 
-  return(two_plants[order(rownames(two_plants)), order(colnames(two_plants))])
-}
-
+# Extract table from the heatmap
+extract_table(Ath_MG_OG, Tomato_MG_OG, 0.01)
 ```
 
-
-```{r}
-library(ggplot2)
-library(reshape)
-df = as.data.frame(count_com_OG(Ath_MG_OG[Ath_MG_OG$cluster %in% c("Nonhair1", "Hair1", "Hair2", "Cortex", "Endodermis", "Endocortex",  "Xylem", "Phloem", "Stele2","MZ1", "MZ2"),], Tomato_MG_OG))
-df$cell_type = rownames(df) # Add column to make 2 variables when using melt function
-
-
-# Add a row that sums up the values in all other rows
-sumrow = df %>% dplyr::select(-cell_type) %>% colSums() # sum all numeric row in the dataframe
-sum_h = c(sumrow, "sum_h") 
-df = rbind(df, sum_h) # After merging two data frames, datatype in dataframe will be changed into character
-library(hablar)
-df = df %>% retype() #%>% as.data.frame(df) # This library and function retype will change the data into the correct type
-
-# Add a column to sum up all values in other columns
-df$sum_v = df %>% dplyr::select(-cell_type) %>% rowSums() # sum all numeric columns in the dataframe
-rownames(df) <- df$cell_type  
-df
-
-p_value_dataframe = df[1: (nrow(df) - 1), 1: (ncol(df) -2)]
-
-for (i in rownames(p_value_dataframe)){
-  for (j in colnames(p_value_dataframe)){
-    frame = df[c(i, "sum_h"), c(j, "sum_v")]
-    frame[2,2] = frame[2,2] - frame[1,2] - frame[2,1] + frame[1,1]
-    frame[1,2] = frame[1,2] - frame[1,1]
-    frame[2,1] = frame[2,1] - frame[1,1]
-    p_value_dataframe[i,j] = fisher.test(frame, alternative = "greater")$p.value
-  }
-}
-
-adjusted_pvalue_dataframe <- p_value_dataframe
-adjusted_pvalue_dataframe[] = p.adjust(unlist(p_value_dataframe), method = "BH")
-conclusionTable_0.001 = ifelse(adjusted_pvalue_dataframe < 0.05, "Reject", "Fail")
-
-table_count = as.matrix(count_com_OG(Ath_MG_OG[Ath_MG_OG$cluster %in% c("Nonhair1", "Hair1", "Hair2", "Cortex", "Endodermis", "Endocortex",  "Xylem", "Phloem", "Stele2","MZ1", "MZ2"),], Tomato_MG_OG))
-
-#-----
-df1 = melt(table_count)
-df1$test = melt(conclusionTable_0.001)$value
-df1
-#-----
-plot_ATH_Tom = ggplot(df1, aes(x = factor(X1, levels = c("Nonhair1", "Hair1", "Hair2", "Cortex", "Endodermis", "Endocortex",  "Xylem", "Phloem", "Stele2","MZ1", "MZ2")), y = factor(X2), fill = value)) +
-       geom_tile() + 
-       geom_text(aes(label = value), color = "black") +
-       scale_fill_gradient(low = "white", high = "darkgreen") +
-       geom_rect(data = subset(df1, test == "Reject"), 
-            aes(xmin = as.numeric(factor(X1, levels = c("Nonhair1", "Hair1", "Hair2", "Cortex", "Endodermis", "Endocortex",  "Xylem", "Phloem", "Stele2","MZ1", "MZ2"))) - 0.5, xmax = as.numeric(factor(X1, levels = c("Nonhair1", "Hair1", "Hair2", "Cortex", "Endodermis", "Endocortex",  "Xylem", "Phloem", "Stele2","MZ1", "MZ2"))) + 0.5, 
-                ymin = as.numeric(X2) + 0.5 , ymax = as.numeric(X2) + 1.5), 
-            fill = NA, color = "red", size = 1) +
-       theme(legend.position="right", 
-                  axis.line.x = element_line(size = 1),
-                  axis.line.y = element_line(size = 1),
-                  axis.text.x = element_text(color="black", face = "bold",size=12, angle=90, vjust = 0.4, hjust = 1), 
-                  axis.text.y = element_text(color="black", face = "bold",size=12, angle=0, vjust = 0.5, hjust = 1),
-                  axis.ticks.length = unit(0.1,"cm"),
-                  axis.ticks = element_line(size = 1),
-                  legend.title = element_text(size=10, face= "bold"),
-                  legend.text = element_text(size=8),
-                  plot.title = element_text(size=14, face= "bold", colour= "blue", hjust = 0.5),
-                  axis.title.x = element_text(size=17, face="bold", colour = "darkgreen", vjust = 1),    
-                  axis.title.y = element_text(size=17, face="bold", colour = "darkgreen")) +
-  labs(x = "Arabidopsis", y = "Tomato")
-
-
-plot_ATH_Tom
-
-#pdf("/Users/tranchau/Documents/SC_crossSpecies/092522_allSteps/Figure/Figure_independentTest/111222_Independent_Seurat/091723_Seurat_ATH_Tom_05_15Clusters_count.pdf", width = 7, height = 5)
-plot_ATH_Tom
-#dev.off()
-```
-
-
-# Extract data from the heatmap
-```{r}
-adjusted_pvalue_dataframe$rownames = rownames(adjusted_pvalue_dataframe)
-df_adjust_pvalue = melt(adjusted_pvalue_dataframe, id.vars = "rownames")
-df1$FDR = df_adjust_pvalue$value
-##
-Ath_cluster_numOMG = Ath_MG_OG[Ath_MG_OG$cluster %in% c("Nonhair1", "Hair1", "Hair2", "Cortex", "Endodermis", "Endocortex",  "Xylem", "Phloem", "Stele2","Stele1", "Nonhair2"),] %>%
-                      group_by(cluster) %>%
-                      summarize(ATH_numOMG = n_distinct(Orthogroup))
-
-Tomato_cluster_numOMG = Tomato_MG_OG %>%
-                      group_by(cluster) %>%
-                      summarize(Tomato_numOMG = n_distinct(Orthogroup))
-##
-extractTable = merge(merge(df1, Ath_cluster_numOMG, by.x = "X1", by.y = "cluster"), Tomato_cluster_numOMG, by.x = "X2", by.y = "cluster") 
-names(extractTable)[1] = "Tomato_clusters"
-names(extractTable)[2] = "ATH_clusters"
-names(extractTable)[3] = "comOMG"
-extractTable <- extractTable[, c("ATH_clusters", "ATH_numOMG", "Tomato_clusters", "Tomato_numOMG", "comOMG", "FDR", "test")] %>% arrange(FDR)
-extractTable
-
-#write.csv(extractTable, "/Users/tranchau/Documents/SC_crossSpecies/092522_allSteps/120423_Submission/Figure2/Data/extractTabe_ATH_15Tomato.csv")
-# Finish here for one comparison
-```

@@ -1,5 +1,5 @@
 ---
-title: "Untitled"
+title: "Pairwise comparison"
 output: html_document
 date: "2024-02-25"
 ---
@@ -12,6 +12,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 setwd("/Users/tranchau/Documents/VSCode/OrthoMarkerGeneGroups")
 ```
+
+# Skip step 1 if you have marker genes
 
 # Step 2
 ```{r}
