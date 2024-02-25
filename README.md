@@ -3,7 +3,7 @@
 ### Introduction:
 Despite the widespread application of single-cell RNA sequencing (scRNA-seq) inplant biology, the scarcity of known cell-type marker genes and the divergence of marker expression patterns limit the accuracy of cell-type identification in many species. To address this challenge, we have devised a novel computational strategy called Orthologous Marker Gene groups (OMGs) which can identify cell types in both model and non-model plant species. Our method does not depend on the complexity of cross-species data integration, thus is highly efficient, while still accurately determining inter species cellular similarities of diverse species. We validated our approach by analyzing published single-cell data from Arabidopsis,rice, and maize, and confirmed its accuracy in identifying cell types in tomato root and shoot apex tissues. The robustness of our method was further demonstrated by a successful mapping of 268 cell clusters from 1 million cells across 15 diverse plant species and various tissue types. Our findings suggest that the OMGs method, informed by reference single-cell maps, can accurately annotate cell types for most monocot and dicot species. 
 
-![Test](./Figures/pipeline.jpg)
+![pipeline](./Figures/pipeline.jpg)
 
 
 ### Requirements:
@@ -80,12 +80,24 @@ source("Step3_PairwiseComparison/count_comOMGs.R")
 df_commonOMGs = test_significant(Ath_MG_OG, Oryza_MG_OG, 0.01)
 
 # Create the plot with ggplot
-source("Step3_PairwiseComparison/plot_generate.R")
 plot_ATH_Rice = generate_plot_comparison(df_commonOMGs, "Arabidopsis", "Rice")
 plot_ATH_Rice
 ```
-![Test](./Figures/030823_Seurat_ATH_Rice_count2.jpg)
+![paiwise](./Figures/030823_Seurat_ATH_Rice_count2.jpg)
 
+Extract data from the heatmap. The Species_x_clusters is the clusters of species on the x-axis. The Species_x_numOMG is the unique number of OMG converted from species marker genes. The Species_y_clusters is the clusters of species on the y-axis. The comOMG column consists of the common OMGs between two species' clusters. FDR is the False Discovery Rate to correct for multiple testing. Test is the result "Reject" or "Fail" based on the FDR value.
+```R
+# Extract table from the heatmap
+extract_table(Ath_MG_OG, Oryza_MG_OG, 0.05) 
+```
+![table](./Figures/table_Rice_ATH.png)
+
+Extract marker genes of common OMGs between two species clusters
+```R
+# Extract OMG genes
+extract_gene(Ath_MG_OG, Oryza_MG_OG, "Cortex", "Cortex") 
+```
+![table_genes](./Figures/table_genes.png)
 Detailed information can be found in the R markdown in step 3 folder
 
 #### Step 4, Predict cell types in a query species:
@@ -100,7 +112,6 @@ source("Step3_PairwiseComparison/count_comOMGs.R")
 df1 = test_significant(Ath_MG_OG, Tomato_MG_OG, 0.01)
 
 # Create the plot with ggplot
-source("Step3_PairwiseComparison/plot_generate.R")
 plot_ATH_Tom = generate_plot_comparison(df1, "Arabidopsis", "Tomato")
 
 plot_ATH_Tom
