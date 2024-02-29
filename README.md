@@ -42,6 +42,9 @@ source("Step3_PairwiseComparison/count_comOMGs.R")
 df_commonOMGs = test_significant(Arabidopsis_OMG, Brassica_OMG, 0.01)
 plot_ATH_BRA = generate_plot_comparison(df_commonOMGs, "Arabidopsis_thaliana", "Brassica_rapa")
 plot_ATH_BRA
+
+# Extract data from the heatmap
+extract_table(Arabidopsis_OMG, Brassica_OMG, 0.01)
 ```
 
 ### Detailed processing:
