@@ -18,7 +18,33 @@ Despite the widespread application of single-cell RNA sequencing (scRNA-seq) inp
 * reshape
 * hablar
 
-### Processing:
+### Quick start:
+```R
+# Load packages
+library(tidyverse); library(ggplot2); library(reshape); library(hablar)
+
+# Load available marker genes
+MGs = read.csv("Step1_FindMarkerGenes/MG_example.csv", row.names = 1)
+source("Step1_FindMarkerGenes/MG_extraction.R")
+MG_species1 = MarkerGenes("Arabidopsis_thaliana", "Leaf") # 1st parmeter is species name, 2nd parameter is tissue type
+MG_species2 = MarkerGenes("Brassica_rapa", "Leaf")
+
+
+# Create orthologous marker gene groups
+orthofinder = read.csv("Step2_OrthoFinder/Orthogroups.tsv", header = TRUE, sep = "\t")
+source("Step2_OrthoFinder/convert_MG_to_OMG.R")
+Arabidopsis_OMG = merge_MG_OG(MG_species1, clean_OG(orthofinder, "Arabidopsis_thaliana"), "Arabidopsis_thaliana")
+Brassica_OMG = merge_MG_OG(MG_species2, clean_OG(orthofinder, "Brassica_rapa"), "Brassica_rapa")
+
+
+# Create comparison heatmap
+source("Step3_PairwiseComparison/count_comOMGs.R")
+df_commonOMGs = test_significant(Arabidopsis_OMG, Brassica_OMG, 0.01)
+plot_ATH_BRA = generate_plot_comparison(df_commonOMGs, "Arabidopsis_thaliana", "Brassica_rapa")
+plot_ATH_BRA
+```
+
+### Detailed processing:
 #### Step 1, Find cell type marker genes:
 Identify marker genes in plant species using Seurat package
 ```R
@@ -133,4 +159,4 @@ Browser: http://orthomarkergenes.org/ </br>
 Browser tutorial: https://youtu.be/Jb4uMq394Sg
 
 ### Contact:
-If you have any questions regarding the OMG methods, please contact me at tnchau@vt.edu
+If you have any questions regarding the OMG methods, please contact me (Tran Chau) at tnchau@vt.edu
