@@ -8,20 +8,24 @@ Despite the widespread application of single-cell RNA sequencing (scRNA-seq) inp
 
 ### Requirements:
 * R version 4.1.0 or higher </br>
-* Matrix package </br>    
+* Matrix package version 1.6-4</br>    
 * Seurat package version 4.1.1 </br>
 * SPmarker package and its dependencies including Python, pandas, sklearn, shap, keras </br>
-* OrthoFinder software (v2.5.4) </br>
-* Shiny package </br>
-* Harmony package
-* ggplot2
-* reshape
-* hablar
+* OrthoFinder software version 2.5.4 </br>
+* Shiny package for web browser version 1.8.0 </br>
+* ggplot2 version 3.4.4 </br>
+* reshape version 0.8.9 </br>
+* hablar version 0.3.2 </br>
 
 ### Quick start:
+
+- `git clone https://github.com/LiLabAtVT/OrthoMarkerGeneGroups.git`
+
+
 ```R
 # Load packages
-library(tidyverse); library(ggplot2); library(reshape); library(hablar)
+# install.packages("Seurat") # install packages if you don't have them
+library(tidyverse); library(ggplot2); library(reshape); library(hablar); library(Seurat)
 
 # Load available marker genes
 MGs = read.csv("Step1_FindMarkerGenes/MG_example.csv", row.names = 1)
@@ -46,6 +50,7 @@ plot_ATH_BRA
 # Extract data from the heatmap
 extract_table(Arabidopsis_OMG, Brassica_OMG, 0.01)
 ```
+Will take less than a minute
 
 ### Detailed processing:
 #### Step 1, Find cell type marker genes:
@@ -67,7 +72,6 @@ Markers <- FindAllMarkers(Seurat_obj, only.pos = TRUE, min.pct = 0.5,
 saveRDS(Markers, "Markers.RData")
 write.csv(Markers, "Markers.csv")
 ```
-
 Detailed information can be found in this video tutorial: https://youtu.be/oliRmER1rXw
 
 #### Step 2, Find orthologous groups by OrthoFinder:
