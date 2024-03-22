@@ -125,15 +125,29 @@ generate_plot_comparison <- function(comOMGs_test, species_x, species_y) {
 # This function is different from the function of comparison 
 # because the clusters of query species (on y axis) is the integer (not string)
 generate_plot_prediction <- function(comOMGs_test, species_x, species_y) {
-  plot_comparison <- ggplot(comOMGs_test, aes(x = factor(X1), y = factor(X2), fill = value)) +
+  
+  # Ensure factors are ordered 
+  comOMGs_test$X1 <- factor(comOMGs_test$X1, levels = unique(comOMGs_test$X1))
+  comOMGs_test$X2 <- factor(comOMGs_test$X2, levels = unique(sort(as.integer(comOMGs_test$X2))))
+
+  x1_map <- as.numeric(comOMGs_test$X1)
+  x2_map <- as.numeric(comOMGs_test$X2)
+  
+  # Use mappings for geom_rect
+  rejected_data <- subset(comOMGs_test, test == "Reject")
+  rejected_data$xmin <- x1_map[comOMGs_test$test == "Reject"] - 0.5
+  rejected_data$xmax <- x1_map[comOMGs_test$test == "Reject"] + 0.5
+  rejected_data$ymin <- x2_map[comOMGs_test$test == "Reject"] - 0.5
+  rejected_data$ymax <- x2_map[comOMGs_test$test == "Reject"] + 0.5
+  
+  plot_prediction <- ggplot(comOMGs_test, aes(x = X1, y = X2, fill = value)) +
     geom_tile() +
     geom_text(aes(label = value), color = "black") +
     scale_fill_gradient(low = "white", high = "darkgreen") +
-    geom_rect(data = subset(comOMGs_test, test == "Reject"),
-              aes(xmin = as.numeric(X1) - 0.5, xmax = as.numeric(X1) + 0.5,
-                  ymin = as.numeric(factor(X2)) - 0.5, ymax = as.numeric(factor(X2)) + 0.5),
+    geom_rect(data = rejected_data,
+              aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
               fill = NA, color = "red", size = 1) +
-        theme(legend.position = "right",
+    theme(legend.position = "right",
           axis.line.x = element_line(size = 1),
           axis.line.y = element_line(size = 1),
           axis.text.x = element_text(color = "black", face = "bold", size = 13, angle = 90, vjust = 0.4, hjust = 1),
@@ -146,6 +160,6 @@ generate_plot_prediction <- function(comOMGs_test, species_x, species_y) {
           axis.title.x = element_text(size = 18, face = "bold", colour = "darkgreen", vjust = 1),
           axis.title.y = element_text(size = 18, face = "bold", colour = "darkgreen")) +
     labs(x = species_x, y = species_y)
-
-  return(plot_comparison)
+  
+  return(plot_prediction)
 }
