@@ -27,6 +27,8 @@ Unzip files
 
       
 ```R
+setwd("../OrthoMarkerGeneGroups")
+
 # Load packages
 # install.packages("Seurat") # install packages if you don't have them
 library(tidyverse); library(ggplot2); library(reshape); library(hablar); library(Seurat)
