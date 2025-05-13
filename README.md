@@ -22,8 +22,10 @@ Despite the widespread application of single-cell RNA sequencing (scRNA-seq) inp
 - `git clone https://github.com/LiLabAtVT/OrthoMarkerGeneGroups.git`
 
 Unzip files
-- `cd OrthoMarkerGeneGroups && \
-  find . -name "*.zip" -exec sh -c 'cd "$(dirname "{}")" && unzip -o "$(basename "{}")"' \;`
+```bash
+cd OrthoMarkerGeneGroups
+find . -name "*.zip" -exec sh -c 'cd "$(dirname "{}")" && unzip -o "$(basename "{}")"' \;
+```
       
 ```R
 # Load packages
