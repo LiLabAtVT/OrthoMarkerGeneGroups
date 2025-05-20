@@ -152,6 +152,10 @@ Predict cell types in Tomato root and shoot.
 # Load packages
 library(ggplot2); library(reshape); library(hablar)
 
+# Load tomato marker genes
+MG_tom = readRDS("Step1_FindMarkerGenes/MG_Tomato.RData")
+Tomato_MG_OG = merge_MG_OG(MG_tom, clean_OG(orthofinder, "Solanum_lycopersicum") , "Solanum_lycopersicum") 
+
 # Function create table of common OMGs between 2 species
 source("Step3_PairwiseComparison/count_comOMGs.R")
 df_commonOMGs = test_significant(Ath_MG_OG, Tomato_MG_OG, 0.01)
