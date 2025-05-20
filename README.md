@@ -98,8 +98,8 @@ og_ath = clean_OG(orthofinder, "Arabidopsis_thaliana") # EX: Arabidopsis_thalian
 og_oryza = clean_OG(orthofinder, "Oryza_sativa") # EX: Rice (Oryza Sativa)
 
 # load marker genes found in step 1, two examples of Arabidospis and Rice 
-MG_ara = readRDS("Step1_FindMarkerGenes/MG_120923_ATH_05.RData")
-MG_oryza = readRDS("Step1_FindMarkerGenes/MG_120923_Rice_05.RData")
+MG_ara = readRDS("Step1_FindMarkerGenes/MG_Arabidopsis.RData")
+MG_oryza = readRDS("Step1_FindMarkerGenes/MG_Rice.RData")
 
 # Merge marker gene and OG genes
 Ath_MG_OG = merge_MG_OG(MG_ara, og_ath, "Arabidopsis_thaliana")  # EX: Arabidopsis_thaliana 
