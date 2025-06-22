@@ -27,7 +27,7 @@ Despite the widespread application of single-cell RNA sequencing (scRNA-seq) inp
 Unzip files
 - `cd OrthoMarkerGeneGroups`
 - `find . -name "*.zip" -exec sh -c 'cd "$(dirname "{}")" && unzip -o "$(basename "{}")"' \;`
-<img src="Figures/unzip_git.gif" width="600"/>
+<img src="Figures/upzip_git.gif" width="600"/>
       
 ```R
 setwd("../OrthoMarkerGeneGroups")
