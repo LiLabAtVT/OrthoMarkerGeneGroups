@@ -20,14 +20,14 @@ Despite the widespread application of single-cell RNA sequencing (scRNA-seq) inp
 ## Quick start:
 
 - `git clone https://github.com/LiLabAtVT/OrthoMarkerGeneGroups.git`
-<img src="Figures/OMG_git.gif" width="600"/>
+<img src="Figures/OMG_git.gif" width="800"/>
 
 
 
 Unzip files
 - `cd OrthoMarkerGeneGroups`
 - `find . -name "*.zip" -exec sh -c 'cd "$(dirname "{}")" && unzip -o "$(basename "{}")"' \;`
-<img src="Figures/upzip_git.gif" width="600"/>
+<img src="Figures/upzip_git.gif" width="800"/>
       
 ```R
 setwd("../OrthoMarkerGeneGroups")
