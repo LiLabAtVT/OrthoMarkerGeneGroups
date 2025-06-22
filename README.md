@@ -17,10 +17,13 @@ Despite the widespread application of single-cell RNA sequencing (scRNA-seq) inp
 * reshape version 0.8.9 </br>
 * hablar version 0.3.2 </br>
 
-### Quick start:
+## Quick start:
 
 - `git clone https://github.com/LiLabAtVT/OrthoMarkerGeneGroups.git`
-![Git clone](Figures/OMG_git.gif)
+<img src="Figures/OMG_git.gif" width="300"/>
+
+
+
 Unzip files
 - `cd OrthoMarkerGeneGroups`
 - `find . -name "*.zip" -exec sh -c 'cd "$(dirname "{}")" && unzip -o "$(basename "{}")"' \;`
