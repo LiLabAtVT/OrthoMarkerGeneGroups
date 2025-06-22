@@ -20,7 +20,7 @@ Despite the widespread application of single-cell RNA sequencing (scRNA-seq) inp
 ## Quick start:
 
 - `git clone https://github.com/LiLabAtVT/OrthoMarkerGeneGroups.git`
-<img src="Figures/OMG_git.gif" width="300"/>
+<img src="Figures/OMG_git.gif" width="600"/>
 
 
 
