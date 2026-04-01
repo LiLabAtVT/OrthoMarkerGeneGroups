@@ -37,7 +37,7 @@ dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 # =============================================================================
 # 1. Load reference data
 # =============================================================================
-setwd("../Omg_sandbean")
+setwd("../Omg_annotation")
 cat("Loading reference data...\n")
 MG_all <- read.delim("reference_markers.tsv", header = TRUE, sep = "\t")
 OG_full <- read.delim("orthogroups.tsv", header = TRUE, sep = "\t")
