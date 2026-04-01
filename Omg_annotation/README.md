@@ -5,6 +5,11 @@ Annotate cell types in plant scRNA-seq/snRNA-seq data by testing marker gene ort
 ## Quick Start
 
 ```bash
+# Clone and set up
+git clone https://github.com/LiLabAtVT/OrthoMarkerGeneGroups.git
+cd OrthoMarkerGeneGroups/Omg_annotation
+unzip "*.zip"
+
 # Install R dependencies (one time)
 Rscript -e 'install.packages(c("tidyverse", "reshape2", "pheatmap"))'
 
@@ -35,8 +40,8 @@ Gene names with hyphens vs. underscores (e.g., `Gene-01` vs `Gene_01`) are handl
 
 | File | Description |
 |------|-------------|
-| `orthogroups.tsv` | Orthogroup definitions across 34 species from OrthoFinder |
-| `reference_markers.tsv` | Reference marker genes from 17 plant species, 41 tissue types |
+| `orthogroups.tsv.zip` | Orthogroup definitions across 34 species from OrthoFinder (unzip before running) |
+| `reference_markers.tsv.zip` | Reference marker genes from 17 plant species, 41 tissue types (unzip before running) |
 
 ## Usage
 
@@ -200,8 +205,8 @@ If you use this pipeline, please cite:
 
 ```
 .
-├── Omg_annotation.R          # Main pipeline script
-├── orthogroups.tsv           # Orthogroup definitions (34 species)
-├── reference_markers.tsv     # Reference marker genes (17 species, 41 tissues)
+├── Omg_annotation.R              # Main pipeline script
+├── orthogroups.tsv.zip           # Orthogroup definitions (34 species) — unzip before running
+├── reference_markers.tsv.zip     # Reference marker genes (17 species, 41 tissues) — unzip before running
 └── README.md
 ```
