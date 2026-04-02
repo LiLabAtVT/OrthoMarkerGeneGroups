@@ -37,7 +37,7 @@ dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 # =============================================================================
 # 1. Load reference data
 # =============================================================================
-script_dir <- dirname(normalizePath(sys.frame(1)$ofile))
+script_dir <- dirname(normalizePath(sub("--file=", "", grep("--file=", commandArgs(FALSE), value = TRUE)[1])))
 setwd(script_dir)
 cat("Loading reference data...\n")
 MG_all <- read.delim("reference_markers.tsv", header = TRUE, sep = "\t")
