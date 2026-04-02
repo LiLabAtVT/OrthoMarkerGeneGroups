@@ -9,7 +9,8 @@
 Annotate cell types in plant scRNA-seq/snRNA-seq with a single command. No multi-step workflow needed.
 
 ```bash
-cd Omg_annotation && unzip "*.zip"
+git clone https://github.com/LiLabAtVT/OrthoMarkerGeneGroups.git              
+cd OrthoMarkerGeneGroups/Omg_annotation && unzip "*.zip"
 Rscript Omg_annotation.R your_cluster_markers.csv 
 ```
 
