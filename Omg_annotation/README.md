@@ -14,7 +14,7 @@ unzip "*.zip"
 Rscript -e 'install.packages(c("tidyverse", "reshape2", "pheatmap"))'
 
 # Run the pipeline
-Rscript Omg_annotation.R my_cluster_markers.csv 0.01 200
+Rscript Omg_annotation.R my_cluster_markers.csv 
 ```
 
 ## Requirements
