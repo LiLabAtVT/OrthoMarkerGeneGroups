@@ -10,7 +10,7 @@ Annotate cell types in plant scRNA-seq/snRNA-seq with a single command. No multi
 
 ```bash
 cd Omg_annotation && unzip "*.zip"
-Rscript Omg_annotation.R my_cluster_markers.csv 0.01 200
+Rscript Omg_annotation.R your_cluster_markers.csv 
 ```
 
 **[See full documentation &rarr;](Omg_annotation/README.md)**
