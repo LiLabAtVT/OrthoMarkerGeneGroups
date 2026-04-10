@@ -8,7 +8,6 @@ Annotate cell types in plant scRNA-seq/snRNA-seq data by testing marker gene ort
 # Clone and set up
 git clone https://github.com/LiLabAtVT/OrthoMarkerGeneGroups.git
 cd OrthoMarkerGeneGroups/Omg_annotation
-unzip "*.zip"
 
 # Install R dependencies (one time)
 Rscript -e 'install.packages(c("tidyverse", "reshape2", "pheatmap"))'
