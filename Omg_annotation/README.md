@@ -39,8 +39,8 @@ Gene names with hyphens vs. underscores (e.g., `Gene-01` vs `Gene_01`) are handl
 
 | File | Description |
 |------|-------------|
-| `orthogroups.tsv.zip` | Orthogroup definitions across 34 species from OrthoFinder (unzip before running) |
-| `reference_markers.tsv.zip` | Reference marker genes from 17 plant species, 41 tissue types (unzip before running) |
+| `orthogroups.tsv` | Orthogroup definitions across 34 species from OrthoFinder (unzip before running) |
+| `reference_markers.tsv` | Reference marker genes from 17 plant species, 41 tissue types (unzip before running) |
 
 ## Usage
 
