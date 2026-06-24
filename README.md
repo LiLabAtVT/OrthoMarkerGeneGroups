@@ -1,10 +1,6 @@
-# omg
+# Ortholog Marker Gene cross-species cell type annotation
 
-**Ortholog Marker Gene cross-species cell type annotation** — R package version of the
-`Omg_annotation.R` pipeline ([Chau et al., *Nat Commun* 2025](https://doi.org/10.1038/s41467-024-55755-0)).
-
-Annotate cell types in plant scRNA-seq/snRNA-seq data by testing marker-gene
-ortholog overlap against a reference panel of plant species and tissues. 
+Annotate cell types in plant scRNA-seq/snRNA-seq data by testing marker-gene ortholog overlap against a reference panel of plant species and tissues. 
 
 ## Install
 
