@@ -27,15 +27,14 @@ also returns the results as R objects:
 
 ## Adding a new species
 
-**If your query species is new** (not in the 33): run OrthoFinder so your
-species' genes are placed into orthogroups, then point `omg()` at the result —
-no reinstall, the reference panel is left unchanged:
+**If your query species is not in the list)**: run OrthoFinder so your
+species' genes are placed into orthogroups, then run `omg()` at the result:
 
 ```r
 omg("my_markers.csv", orthogroups = "path/to/Orthogroups.tsv")
 ```
 
-**To add a species into the reference panel** (advanced): also pass an updated
+**To add a species into the reference panel**: also pass an updated
 markers table:
 
 ```r
