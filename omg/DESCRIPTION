@@ -1,0 +1,29 @@
+Package: omg
+Type: Package
+Title: Ortholog Marker Gene Cross-Species Cell Type Annotation
+Version: 0.1.0
+Authors@R: person("Tran", "Chau", email = "chauducanh@gmail.com", role = c("aut", "cre"))
+Description: Annotate cell types in plant single-cell/nucleus RNA-seq data by
+    testing marker-gene ortholog overlap against a reference panel of plant
+    species and tissues. Takes a Seurat FindAllMarkers() style CSV and returns
+    cell-type predictions with confidence scores, the same outputs as the
+    Omg_annotation.R command-line pipeline. Reference marker and orthogroup
+    tables ship with the package and can be overridden with user-supplied files
+    (e.g. an OrthoFinder run that adds a new species).
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: false
+Depends: R (>= 4.0)
+Imports:
+    dplyr,
+    tidyr,
+    tibble,
+    ggplot2,
+    reshape2,
+    magrittr,
+    stats,
+    utils
+Suggests:
+    testthat (>= 3.0.0)
+RoxygenNote: 7.3.3
+Config/testthat/edition: 3
